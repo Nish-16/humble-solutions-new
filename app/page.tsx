@@ -145,7 +145,7 @@ export default function Home() {
     <div>
       <Navbar />
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black text-white relative z-10">
-        <HeroSection heroRef={heroRef} threeRef={threeRef} />
+        <HeroSection />
         <TimelineSection />
         <AboutSection />
         <ServicesSection />

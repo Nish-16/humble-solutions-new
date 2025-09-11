@@ -139,7 +139,7 @@ const TimelineSection: React.FC = () => {
                     scrub: true,
                 },
             });
-
+            const timelineItems = gsap.utils.toArray(".timeline-item") as HTMLElement[];
             timelineItems.forEach((item) => {
                 const itemContent = (item as HTMLElement).querySelector(".timeline-content");
                 const itemIcon = (item as HTMLElement).querySelector(".timeline-icon");
@@ -179,7 +179,7 @@ const TimelineSection: React.FC = () => {
  return (
    <section
      ref={sectionRef}
-     className="relative py-24 px-4 sm:px-6 lg:px-8 bg-black text-white overflow-hidden"
+     className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white overflow-hidden"
    >
      {/* Background Glow */}
      <div className="absolute inset-0 z-0">
