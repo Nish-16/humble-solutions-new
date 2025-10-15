@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import * as THREE from "three";
+import {TypingText} from "./UI/TypingTextDemo";
 
 const HeroSection: React.FC = () => {
   const threeRef = useRef<HTMLCanvasElement>(null);
@@ -109,17 +110,16 @@ const HeroSection: React.FC = () => {
         className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4"
         style={{ transform: "translateZ(0)" }} // GPU acceleration
       >
-        <h1
-          className="gsap-hero-title text-4xl sm:text-7xl md:text-8xl font-bold mb-7 drop-shadow-lg"
-          style={{
-            background: "linear-gradient(to right, #38bdf8, #06b6d4)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            color: "#38bdf8", // fallback for safety
-          }}
-        >
-          Humble Solutions
-        </h1>
+        <TypingText 
+        text={["Humble Solutions"]}
+        typingSpeed={75}
+        pauseDuration={1500}
+        showCursor={true}
+        className="text-6xl font-bold text-center max-w-2xl mb-3"
+        cursorClassName="h-12"
+        textColors={['#3b82f6', '#8b5cf6', '#06b6d4']}
+        variableSpeed={{ min: 50, max: 120 }}
+      />
         <p className="gsap-hero-desc text-lg sm:text-2xl max-w-2xl text-center mb-6 text-white/80">
           Transforming Ideas into Intuitive Digital Experiences.
         </p>
