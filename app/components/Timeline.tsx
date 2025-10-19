@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, memo } from "react";
-// --- 1. IMPORT your data and type from the new file ---
 import { timelineData, TimelineItemData } from "./data/Timeline_data";
-
 
 // --- Custom Hook to Load External Scripts ---
 const useScripts = (urls: string[]): boolean => {
@@ -13,10 +11,7 @@ const useScripts = (urls: string[]): boolean => {
         const loadScripts = async () => {
             const promises = urls.map(url => {
                 return new Promise((resolve, reject) => {
-                    // Check if the script is already on the page
-                    if (document.querySelector(`script[src="${url}"]`)) {
-                        return resolve(true);
-                    }
+                    if (document.querySelector(`script[src="${url}"]`)) return resolve(true);
                     const script = document.createElement('script');
                     script.src = url;
                     script.onload = () => resolve(true);
@@ -31,66 +26,63 @@ const useScripts = (urls: string[]): boolean => {
                 console.error("Failed to load scripts:", error);
             }
         };
-
         loadScripts();
-    }, []); // Empty dependency array ensures this runs only once
+    }, []);
 
     return loaded;
 };
 
-
-// --- The timelineData array has been removed from this file ---
-
-
 // --- Memoized Timeline Item Component ---
 interface TimelineItemProps {
-  // --- 2. UPDATE the prop type to use the imported interface ---
   item: TimelineItemData;
   index: number;
 }
 
-const TimelineItem: React.FC<TimelineItemProps> = memo(({ item, index }) => (
- <div className="timeline-item relative pl-12 sm:pl-0 sm:mb-16 last:mb-0">
-   <div
-     className={`flex flex-col sm:flex-row items-start gap-8 ${
-       index % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"
-     }`}
-   >
-     {/* Spacer for desktop layout */}
-     <div className="hidden sm:block sm:w-1/2"></div>
+const TimelineItem: React.FC<TimelineItemProps> = memo(({ item, index }) => {
+    const isEven = index % 2 === 0;
 
-     {/* Icon positioned in the center of the timeline */}
-     <div className="absolute left-4 sm:left-1/2 top-1 -translate-x-1/2 z-10">
-       <div className="timeline-icon w-16 h-16 rounded-full bg-gray-900 border-2 border-cyan-400 flex items-center justify-center shadow-lg">
-         <div className="text-4xl">{item.icon}</div>
-       </div>
-     </div>
+    return (
+        <div className="timeline-item relative pl-12 sm:pl-0 sm:mb-24 last:mb-0">
+            <div className={`flex flex-col sm:flex-row ${isEven ? "" : "sm:flex-row-reverse"} items-center gap-8`}>
 
-     {/* Content Card */}
-     <div className="timeline-content w-full sm:w-1/2 mt-16 sm:mt-0">
-       <div className="bg-gray-900/60 backdrop-blur-md p-8 rounded-xl border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-cyan-500/20 flex flex-col items-center">
-         <span className="text-base font-semibold text-cyan-400 tracking-wider mb-2">
-           {item.year}
-         </span>
-         <div className="mb-4">
-           <span className="inline-block text-6xl md:text-7xl lg:text-8xl drop-shadow-lg">
-             {item.cardIcon}
-           </span>
-         </div>
-         <h3 className="text-2xl font-bold mt-2 mb-3 text-white text-center">
-           {item.title}
-         </h3>
-         <p className="text-gray-300 text-base leading-relaxed mb-3 text-center">
-           {item.description}
-         </p>
-         <p className="text-gray-400 text-sm leading-relaxed text-center">
-           {item.details}
-         </p>
-       </div>
-     </div>
-   </div>
- </div>
-));
+                {/* Image on opposite side */}
+                {item.image && (
+                    <div className="sm:w-1/2 flex justify-center items-center">
+                        <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-64 h-64 sm:w-72 sm:h-72 object-cover rounded-xl shadow-2xl transition-transform duration-300 hover:scale-105"
+                        />
+                    </div>
+                )}
+
+                {/* Spacer if no image */}
+                {!item.image && <div className="sm:w-1/2"></div>}
+
+                {/* Timeline Icon */}
+                <div className="absolute left-4 sm:left-1/2 top-1 -translate-x-1/2 z-10">
+                    <div className="timeline-icon w-16 h-16 rounded-full bg-gray-900 border-2 border-cyan-400 flex items-center justify-center shadow-lg">
+                        <div className="text-4xl">{item.icon}</div>
+                    </div>
+                </div>
+
+                {/* Content Card */}
+                <div className="timeline-content w-full sm:w-1/2 mt-16 sm:mt-0">
+                    <div className="bg-gray-900/60 backdrop-blur-md p-8 rounded-xl border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-cyan-500/20 flex flex-col items-center">
+                        <span className="text-base font-semibold text-cyan-400 tracking-wider mb-2">{item.year}</span>
+                        <div className="mb-4">
+                            <span className="inline-block text-6xl md:text-7xl lg:text-8xl drop-shadow-lg">{item.cardIcon}</span>
+                        </div>
+                        <h3 className="text-2xl font-bold mt-2 mb-3 text-white text-center">{item.title}</h3>
+                        <p className="text-gray-300 text-base leading-relaxed mb-3 text-center">{item.description}</p>
+                        <p className="text-gray-400 text-sm leading-relaxed text-center">{item.details}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    );
+});
 
 // --- Main Timeline Section Component ---
 const TimelineSection: React.FC = () => {
@@ -101,20 +93,15 @@ const TimelineSection: React.FC = () => {
     ]);
 
     useEffect(() => {
-        // Only run animations if the scripts are loaded and the component is mounted
         if (!scriptsLoaded || !sectionRef.current) return;
 
-        // Access GSAP from the window object
         const gsap = (window as any).gsap;
         const ScrollTrigger = (window as any).ScrollTrigger;
-        
-        // Ensure GSAP and ScrollTrigger are available
         if (!gsap || !ScrollTrigger) return;
-        
+
         gsap.registerPlugin(ScrollTrigger);
 
         const pinSection = sectionRef.current;
-        const timelineItems = gsap.utils.toArray(".timeline-item");
         const progressLine = pinSection.querySelector(".timeline-line-progress");
 
         const ctx = gsap.context(() => {
@@ -139,12 +126,14 @@ const TimelineSection: React.FC = () => {
                     scrub: true,
                 },
             });
+
             const timelineItems = gsap.utils.toArray(".timeline-item") as HTMLElement[];
             timelineItems.forEach((item) => {
-                const itemContent = (item as HTMLElement).querySelector(".timeline-content");
-                const itemIcon = (item as HTMLElement).querySelector(".timeline-icon");
+                const itemContent = item.querySelector(".timeline-content");
+                const itemIcon = item.querySelector(".timeline-icon");
+                const itemImage = item.querySelector("img");
 
-                gsap.set([itemContent, itemIcon], { autoAlpha: 0, y: 50, scale: 0.8 });
+                gsap.set([itemContent, itemIcon, itemImage], { autoAlpha: 0, y: 50, scale: 0.8 });
 
                 gsap.to(itemContent, {
                     autoAlpha: 1,
@@ -168,51 +157,66 @@ const TimelineSection: React.FC = () => {
                         start: "top 80%",
                         toggleActions: "play none none reverse",
                     },
-                    
                 });
+
+                if (itemImage) {
+                    gsap.to(itemImage, {
+                        scale: 1,
+                        autoAlpha: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "back.out(1.7)",
+                        scrollTrigger: {
+                            trigger: item,
+                            start: "top 80%",
+                            toggleActions: "play none none reverse",
+                        },
+                    });
+                }
             });
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [scriptsLoaded]); // Rerun the effect if scriptsLoaded changes
+    }, [scriptsLoaded]);
 
- return (
-   <section
-     ref={sectionRef}
-     className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white overflow-hidden"
-   >
-     {/* Background Glow */}
-     <div className="absolute inset-0 z-0">
-       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl opacity-50"></div>
-       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl opacity-50"></div>
-     </div>
+    return (
+        <section
+            ref={sectionRef}
+            className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white overflow-hidden"
+        >
+            {/* Background Glow */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl opacity-50"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl opacity-50"></div>
+            </div>
 
-     <div className="relative z-10">
-       <h2 className="timeline-heading text-4xl sm:text-5xl font-bold mb-20 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-         Our Journey
-       </h2>
-       <div className="relative max-w-3xl mx-auto">
-         {/* Static Background Line */}
-         <div className="absolute left-4 sm:left-1/2 top-0 h-full w-0.5 bg-gray-800 -translate-x-1/2"></div>
+            <div className="relative z-10">
+                <h2 className="timeline-heading text-4xl sm:text-5xl font-bold mb-20 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                    Our Journey
+                </h2>
 
-         {/* Progress Line */}
-         <div className="absolute left-4 sm:left-1/2 top-0 h-full w-0.5 -translate-x-1/2">
-           <div
-             className="timeline-line-progress w-full bg-gradient-to-b from-cyan-400 to-blue-500"
-             style={{ height: "0%" }}
-           ></div>
-         </div>
+                <div className="relative max-w-6xl mx-auto">
+                    {/* Static Background Line */}
+                    <div className="absolute left-4 sm:left-1/2 top-0 h-full w-0.5 bg-gray-800 -translate-x-1/2"></div>
 
-         {/* Timeline Items */}
-         <div className="space-y-16">
-           {timelineData.map((item, index) => (
-             <TimelineItem key={item.title} item={item} index={index} />
-           ))}
-         </div>
-       </div>
-     </div>
-   </section>
-  );
+                    {/* Progress Line */}
+                    <div className="absolute left-4 sm:left-1/2 top-0 h-full w-0.5 -translate-x-1/2">
+                        <div
+                            className="timeline-line-progress w-full bg-gradient-to-b from-cyan-400 to-blue-500"
+                            style={{ height: "0%" }}
+                        ></div>
+                    </div>
+
+                    {/* Timeline Items */}
+                    <div className="space-y-24">
+                        {timelineData.map((item, index) => (
+                            <TimelineItem key={item.title} item={item} index={index} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default TimelineSection;

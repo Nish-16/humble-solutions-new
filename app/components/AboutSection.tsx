@@ -22,7 +22,7 @@ const AboutSection: React.FC = () => {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current!,
-                    start: "top 70%",
+                    start: "top center",
                     toggleActions: "play none none reverse",
                 },
             });

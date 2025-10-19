@@ -204,23 +204,37 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
 
     boxes.forEach((box, index) => {
       const rect = box.getBoundingClientRect();
-      const startX = window.innerWidth / 2 - (rect.left + rect.width / 2);
-      const startY = window.innerHeight / 2 - (rect.top + rect.height / 2);
+      const sectionRect = sectionRef.current!.getBoundingClientRect();
+
+      // Compute position relative to section center
+      const startX =
+        sectionRect.width / 2 - (rect.left - sectionRect.left + rect.width / 2);
+      const startY =
+        sectionRect.height / 2 - (rect.top - sectionRect.top + rect.height / 2);
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current!,
-          start: "center 80%",
-          toggleActions: "play none none none",
+          start: "top center",
+          toggleActions: "play reverse play reverse",
         },
       });
 
       tl.fromTo(
         box,
         { x: startX, y: startY, scale: 0.5, opacity: 0 },
-        { x: 0, y: 0, scale: 1, opacity: 1, duration: 1, ease: "power2.out", delay: index * 0.1 }
+        {
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out",
+          delay: index * 0.1,
+        }
       );
 
+      // subtle floating effect
       tl.to(
         box,
         { y: "+=10", repeat: -1, yoyo: true, ease: "sine.inOut", duration: 1 },

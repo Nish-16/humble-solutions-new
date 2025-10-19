@@ -1,7 +1,5 @@
 // src/components/Timeline_data.ts
 
-// 1. Define a TypeScript interface for a single timeline item.
-// This makes your data structure explicit and reusable.
 export interface TimelineItemData {
   year: string;
   title: string;
@@ -9,9 +7,9 @@ export interface TimelineItemData {
   icon: string;
   cardIcon: string;
   details: string;
+  image?: string; // optional image URL
 }
 
-// 2. Export the timeline data array with the defined type.
 export const timelineData: TimelineItemData[] = [
   {
     year: "2021",
@@ -22,6 +20,7 @@ export const timelineData: TimelineItemData[] = [
     cardIcon: "📝",
     details:
       "We brainstormed, researched, and validated our concept with industry experts and potential users. Early sketches and wireframes set the vision.",
+    image: "/images/2021-inception.jpg", // example image path
   },
   {
     year: "2022",
@@ -32,6 +31,7 @@ export const timelineData: TimelineItemData[] = [
     cardIcon: "🛠️",
     details:
       "Our team worked tirelessly, iterating on design and functionality. We overcame technical challenges and built a scalable foundation.",
+    image: "/images/2022-prototyping.jpg",
   },
   {
     year: "2023",
@@ -42,6 +42,7 @@ export const timelineData: TimelineItemData[] = [
     cardIcon: "🔍",
     details:
       "Beta users provided invaluable feedback. We added new features, improved performance, and polished the user experience.",
+    image: "/images/2023-beta.jpg",
   },
   {
     year: "2024",
@@ -52,6 +53,7 @@ export const timelineData: TimelineItemData[] = [
     cardIcon: "🌍",
     details:
       "We expanded our team, scaled our infrastructure, and formed strategic partnerships. Our user base grew globally.",
+    image: "/images/2024-release.jpg",
   },
   {
     year: "2025",
@@ -62,5 +64,6 @@ export const timelineData: TimelineItemData[] = [
     cardIcon: "🤖",
     details:
       "We are investing in AI, automation, and new markets. Our roadmap includes exciting features and industry collaborations.",
+    image: "/images/2025-innovations.jpg",
   },
 ];
