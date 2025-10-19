@@ -13,11 +13,12 @@ type EarthProps = {
 };
 
 export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
 
   // === Three.js Earth + Stars ===
   useEffect(() => {
-    if (!ref.current) return;
+    if (!canvasRef.current) return;
 
     let renderer: THREE.WebGLRenderer | null = null;
     let rafId = 0;
@@ -26,7 +27,7 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
     let resizeObserver: ResizeObserver | null = null;
 
     const init = () => {
-      const container = ref.current!;
+      const container = canvasRef.current!;
       const rect = container.getBoundingClientRect();
       const width = Math.max(1, Math.floor(rect.width));
       const height = Math.max(1, Math.floor(rect.height));
@@ -37,7 +38,7 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       renderer.setSize(width, height);
       renderer.setClearColor(0x000000, 0);
 
-      // Remove old canvas if exists
+      // Remove old canvas
       const existing = container.querySelector("canvas");
       if (existing) existing.remove();
 
@@ -48,7 +49,7 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       // Scene
       const scene = new THREE.Scene();
 
-      // 🌌 Starfield
+      // Stars
       const starCount = 2000;
       const starGeometry = new THREE.BufferGeometry();
       const starPositions = new Float32Array(starCount * 3);
@@ -141,23 +142,21 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
     return () => cleanup && cleanup();
   }, [textureUrl, size]);
 
-  // Info box classes
-  const boxClasses =
-    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center";
-
-  // === Animate boxes on scroll ===
+  // === Animate info boxes when section enters viewport ===
   useEffect(() => {
-    const boxes = document.querySelectorAll<HTMLElement>(".info-box");
+    if (!sectionRef.current) return;
+
+    const boxes = sectionRef.current.querySelectorAll<HTMLElement>(".info-box");
 
     boxes.forEach((box) => {
       const rect = box.getBoundingClientRect();
-      const startX = window.innerWidth / 2 - (rect.left + rect.width / 2);
-      const startY = window.innerHeight / 2 - (rect.top + rect.height / 2);
+      const startX = window.innerWidth / 2 - (rect.left + rect.width / 4);
+      const startY = window.innerHeight / 5 - (rect.top + rect.height / 4);
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: box,
-          start: "top 90%", // triggers when top of box reaches 90% of viewport
+          trigger: sectionRef.current, // <- trigger is the section container
+          start: "center 75%",         // starts when section top reaches center of viewport
           toggleActions: "play none none none",
         },
       });
@@ -169,7 +168,7 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
         { x: 0, y: 0, scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
       );
 
-      // Floating effect after entrance
+      // Floating effect
       tl.to(
         box,
         { y: "+=10", repeat: -1, yoyo: true, ease: "sine.inOut", duration: 2 },
@@ -177,7 +176,6 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       );
     });
 
-    // Refresh ScrollTrigger after layout
     ScrollTrigger.refresh();
 
     return () => {
@@ -186,12 +184,13 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
     };
   }, []);
 
+  // Info box classes
+  const boxClasses =
+    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center";
+
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      <div
-        ref={ref}
-        className={`relative w-full ${size} flex items-center justify-center`}
-      />
+    <section ref={sectionRef} className={`relative w-full ${size} flex items-center justify-center`}>
+      <div ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
 
       {/* --- Info Boxes --- */}
       <div id="box-1" className={`${boxClasses} top-16 left-16`}>
@@ -230,6 +229,6 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
           Let's build something amazing together.
         </p>
       </div>
-    </div>
+    </section>
   );
 }
