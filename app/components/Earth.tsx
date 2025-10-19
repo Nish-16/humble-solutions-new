@@ -43,7 +43,7 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       if (existing) existing.remove();
 
       const canvas = renderer.domElement as HTMLCanvasElement;
-      canvas.className = "absolute top-0 left-0 w-full h-full";
+      canvas.className = "absolute top-0 left-0 w-full h-full z-0";
       container.appendChild(canvas);
 
       // Scene
@@ -148,30 +148,30 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
 
     const boxes = sectionRef.current.querySelectorAll<HTMLElement>(".info-box");
 
-    boxes.forEach((box) => {
+    boxes.forEach((box, index) => {
       const rect = box.getBoundingClientRect();
-      const startX = window.innerWidth / 2 - (rect.left + rect.width / 4);
-      const startY = window.innerHeight / 5 - (rect.top + rect.height / 4);
+      const startX = window.innerWidth / 2 - (rect.left + rect.width / 2);
+      const startY = window.innerHeight / 2 - (rect.top + rect.height / 2);
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current, // <- trigger is the section container
-          start: "center 75%",         // starts when section top reaches center of viewport
+          trigger: sectionRef.current,
+          start: "center 80%",
           toggleActions: "play none none none",
         },
       });
 
-      // Fly in from center
+      // Fly in from viewport center with staggered delay
       tl.fromTo(
         box,
         { x: startX, y: startY, scale: 0.5, opacity: 0 },
-        { x: 0, y: 0, scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
+        { x: 0, y: 0, scale: 1, opacity: 1, duration: 1, ease: "power2.out", delay: index * 0.1 }
       );
 
       // Floating effect
       tl.to(
         box,
-        { y: "+=10", repeat: -1, yoyo: true, ease: "sine.inOut", duration: 2 },
+        { y: "+=10", repeat: -1, yoyo: true, ease: "sine.inOut", duration: 1 },
         "+=0.5"
       );
     });
@@ -186,48 +186,36 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
 
   // Info box classes
   const boxClasses =
-    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center";
+    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-10";
 
   return (
     <section ref={sectionRef} className={`relative w-full ${size} flex items-center justify-center`}>
-      <div ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+      <div ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-0" />
 
       {/* --- Info Boxes --- */}
       <div id="box-1" className={`${boxClasses} top-16 left-16`}>
         <h3 className="font-bold text-lg mb-1">Our Mission</h3>
-        <p className="text-sm text-gray-300">
-          To deliver innovative and humble solutions globally.
-        </p>
+        <p className="text-sm text-gray-300">To deliver innovative and humble solutions globally.</p>
       </div>
       <div id="box-2" className={`${boxClasses} top-1/2 left-16 -translate-y-1/2`}>
         <h3 className="font-bold text-lg mb-1">Our Team</h3>
-        <p className="text-sm text-gray-300">
-          A passionate group of developers and designers.
-        </p>
+        <p className="text-sm text-gray-300">A passionate group of developers and designers.</p>
       </div>
       <div id="box-3" className={`${boxClasses} bottom-16 left-16`}>
         <h3 className="font-bold text-lg mb-1">Core Services</h3>
-        <p className="text-sm text-gray-300">
-          Web development, UI/UX design, and cloud integration.
-        </p>
+        <p className="text-sm text-gray-300">Web development, UI/UX design, and cloud integration.</p>
       </div>
       <div id="box-4" className={`${boxClasses} top-16 right-16`}>
         <h3 className="font-bold text-lg mb-1">Our Portfolio</h3>
-        <p className="text-sm text-gray-300">
-          Explore our diverse range of successful projects.
-        </p>
+        <p className="text-sm text-gray-300">Explore our diverse range of successful projects.</p>
       </div>
       <div id="box-5" className={`${boxClasses} top-1/2 right-16 -translate-y-1/2`}>
         <h3 className="font-bold text-lg mb-1">Testimonials</h3>
-        <p className="text-sm text-gray-300">
-          What our valued clients have to say about us.
-        </p>
+        <p className="text-sm text-gray-300">What our valued clients have to say about us.</p>
       </div>
       <div id="box-6" className={`${boxClasses} bottom-16 right-16`}>
         <h3 className="font-bold text-lg mb-1">Contact Us</h3>
-        <p className="text-sm text-gray-300">
-          Let's build something amazing together.
-        </p>
+        <p className="text-sm text-gray-300">Let's build something amazing together.</p>
       </div>
     </section>
   );
