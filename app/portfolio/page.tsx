@@ -1,10 +1,9 @@
 import Navbar from "../components/Navbar";
-import GalaxyBackground from "../components/GalaxyBackground";
 
 export default function Portfolio() {
   return (
     <>
-      <GalaxyBackground />
+      
       <Navbar />
       <main className="max-w-5xl mx-auto py-16 px-4 relative z-10">
         <div className="bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl border border-cyan-400/10 p-10 text-center">

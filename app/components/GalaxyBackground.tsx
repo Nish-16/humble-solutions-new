@@ -1,106 +1,107 @@
 "use client";
-import { useEffect, useRef } from "react";
+
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-export default function GalaxyBackground() {
-  const threeRef = useRef<HTMLCanvasElement>(null);
+const GalaxyBackground: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    if (!threeRef.current) return;
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+
     const renderer = new THREE.WebGLRenderer({
-      canvas: threeRef.current,
+      canvas,
       alpha: true,
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
     const scene = new THREE.Scene();
+    const rect = canvas.getBoundingClientRect();
     const camera = new THREE.PerspectiveCamera(
       75,
-      window.innerWidth / window.innerHeight,
+      rect.width / Math.max(1, rect.height),
       0.1,
       1000
     );
-    camera.position.z = 6;
+    camera.position.z = 5;
 
-    // Galaxy/starfield
-    const starsGeometry = new THREE.BufferGeometry();
-    const starCount = 1200;
-    const positions = [];
+    // Stars
+    const starCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(starCount * 3);
+
     for (let i = 0; i < starCount; i++) {
-      const r = 8 + Math.random() * 8;
+      const i3 = i * 3;
+      const r = 4 + Math.random() * 8;
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos(2 * Math.random() - 1);
-      positions.push(
-        r * Math.sin(phi) * Math.cos(theta),
-        r * Math.sin(phi) * Math.sin(theta),
-        r * Math.cos(phi)
-      );
+      positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i3 + 2] = r * Math.cos(phi);
     }
-    starsGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3)
-    );
-    const starsMaterial = new THREE.PointsMaterial({
+
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
       color: "#b6e0fe",
-      size: 0.12,
+      size: 0.03,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
+
+    const stars = new THREE.Points(geometry, material);
     scene.add(stars);
 
-    // Nebula effect
-    const nebulaGeometry = new THREE.SphereGeometry(3.5, 32, 32);
-    const nebulaMaterial = new THREE.MeshBasicMaterial({
-      color: "#38bdf8",
-      transparent: true,
-      opacity: 0.18,
-    });
-    const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-    scene.add(nebula);
-
-    // Animate
     let frameId: number;
+    const clock = new THREE.Clock();
+
     const animate = () => {
-      stars.rotation.y += 0.0008;
-      stars.rotation.x += 0.0003;
-      nebula.rotation.y += 0.0005;
+      const elapsed = clock.getElapsedTime();
+      stars.rotation.y = elapsed * 0.05;
+      stars.rotation.x = elapsed * 0.02;
+
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     };
     animate();
 
-    // Responsive
-    const handleResize = () => {
-      if (!threeRef.current) return;
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
+    // Resize renderer to the actual canvas layout size to avoid oversized drawing buffer
+    const resize = () => {
+      const r = canvas.getBoundingClientRect();
+      const w = Math.max(1, Math.floor(r.width));
+      const h = Math.max(1, Math.floor(r.height));
+      // setSize with updateStyle=false so we don't overwrite CSS sizing (we keep w-full/h-full)
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
     };
-    window.addEventListener("resize", handleResize);
+
+    // Observe size changes of the canvas (or its container)
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    // initial resize
+    resize();
+
     return () => {
       cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", handleResize);
+      ro.disconnect();
       renderer.dispose();
-      starsGeometry.dispose();
-      starsMaterial.dispose();
-      nebulaGeometry.dispose();
-      nebulaMaterial.dispose();
+      geometry.dispose();
+      material.dispose();
     };
   }, []);
 
   return (
     <canvas
-      ref={threeRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-      }}
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none z-0"
     />
   );
-}
+};
+
+export default GalaxyBackground;

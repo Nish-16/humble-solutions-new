@@ -1,11 +1,10 @@
 import Navbar from "../components/Navbar";
-import GalaxyBackground from "../components/GalaxyBackground";
+
 import HomeScrollReveal from "../components/HomeScrollReveal";
 
 export default function About() {
   return (
     <>
-      <GalaxyBackground />
       <Navbar />
       <main className="max-w-4xl mx-auto py-16 px-4 relative z-10">
         <HomeScrollReveal y={60} duration={1.1} once={false}>

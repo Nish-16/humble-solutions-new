@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GalaxyBackground from "./GalaxyBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -86,41 +87,14 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       if (existingCanvas) existingCanvas.remove();
 
       const canvas = renderer.domElement as HTMLCanvasElement;
-      canvas.className = "absolute top-0 left-0 w-full h-full z-0";
+      canvas.className = "absolute top-0 left-0 w-full h-full z-10";
       container.appendChild(canvas);
 
       // Scene
       const scene = new THREE.Scene();
 
-      // Stars
-      const starCount = 2000;
-      const starGeometry = new THREE.BufferGeometry();
-      const starPositions = new Float32Array(starCount * 3);
-      for (let i = 0; i < starCount; i++) {
-        const i3 = i * 3;
-        const r = 20 + Math.random() * 50;
-        const theta = Math.random() * 2 * Math.PI;
-        const phi = Math.acos(2 * Math.random() - 1);
-        starPositions[i3] = r * Math.sin(phi) * Math.cos(theta);
-        starPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        starPositions[i3 + 2] = r * Math.cos(phi);
-      }
-      starGeometry.setAttribute(
-        "position",
-        new THREE.BufferAttribute(starPositions, 3)
-      );
-
-      const starMaterial = new THREE.PointsMaterial({
-        color: "#b6e0fe",
-        size: 0.09,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
-
-      const stars = new THREE.Points(starGeometry, starMaterial);
-      scene.add(stars);
+      // Note: GalaxyBackground component renders a full-screen starfield behind this canvas.
+      // Keep Earth scene focused on the Earth mesh and lights.
 
       // Camera
       const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
@@ -161,8 +135,6 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       // Animation loop
       const animate = () => {
         earthMesh.rotation.y += 0.005;
-        stars.rotation.y += 0.0005;
-        stars.rotation.x += 0.0002;
         renderer!.render(scene, camera);
         rafId = requestAnimationFrame(animate);
       };
@@ -186,8 +158,6 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
         }
         geometry?.dispose();
         material?.map?.dispose();
-        starGeometry.dispose();
-        starMaterial.dispose();
       };
     };
 
@@ -251,15 +221,21 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
   }, []);
 
   const boxClasses =
-    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-10";
+    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-20";
 
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full ${size} flex items-center justify-center`}
+      className={`relative w-full ${size} flex items-center justify-center overflow-hidden`}
     >
+      {/* Galaxy background sits behind everything */}
+      <GalaxyBackground />
+
       {/* Three.js Canvas */}
-      <div ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-0" />
+      <div
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full z-10"
+      />
 
       {/* Info Boxes */}
       {infoBoxes.map((box) => (
