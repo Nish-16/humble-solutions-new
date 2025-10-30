@@ -42,7 +42,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8">
-          {["/", "/services", "/portfolio", "/about"].map((path, i) => {
+          {["/", "/services", "/journey", "/portfolio", "/about"].map((path, i) => {
             const name =
               path === "/"
                 ? "Home"
@@ -79,7 +79,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {open && (
         <ul className="md:hidden flex flex-col space-y-2 px-6 pb-4 animate-fade-in bg-gradient-to-r from-[#0a1a2f]/90 to-[#1a2a4f]/90 backdrop-blur-lg rounded-b-xl shadow-2xl">
-          {["/", "/services", "/portfolio", "/about"].map((path, i) => {
+          {["/", "/services", "/journey", "/portfolio", "/about"].map((path, i) => {
             const name =
               path === "/"
                 ? "Home"

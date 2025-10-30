@@ -6,8 +6,15 @@ import ServicesList from "./ServicesList";
 import ServicesExtras from "./ServicesExtras";
 import content from "./content";
 
-// Navbar is dynamically imported as before
+// Dynamically import components that rely on browser-only APIs
 const Navbar = dynamic(() => import("../components/Navbar"), { ssr: false });
+const FooterSection = dynamic(() => import("../components/FooterSection"), {
+  ssr: false,
+});
+const GalaxyBackground = dynamic(
+  () => import("../components/GalaxyBackground"),
+  { ssr: false }
+);
 
 const { hero, services, cta } = content;
 
@@ -110,30 +117,28 @@ export default function ServicesPage() {
   return (
     <>
       <Navbar />
-      {/* IMPROVEMENT: Replaced the simple gradient with a richer, darker background and decorative, blurred gradient shapes for depth. */}
-      <main className="max-w-7xl mx-auto py-20 px-6 relative z-10 bg-slate-950">
-        <div
-          className="absolute inset-0 -z-10 overflow-hidden"
-          aria-hidden="true"
-        >
-          <div className="absolute left-[max(50%,25rem)] top-0 h-[60rem] w-[120rem] -translate-x-1/2 -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,200,255,0.15),rgba(255,255,255,0))] blur-3xl" />
-        </div>
+      <div className="min-h-screen relative bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black">
+        <GalaxyBackground />
 
-        <ServicesHero
-          ref={heroRef}
-          title={hero.title}
-          subtitle={hero.subtitle}
-        />
+        <main className="relative z-10 max-w-7xl mx-auto py-20 px-6">
+          <ServicesHero
+            ref={heroRef}
+            title={hero.title}
+            subtitle={hero.subtitle}
+          />
 
-        <ServicesList
-          services={services}
-          cardsRef={cardsRef}
-          ctaRef={ctaRef}
-          cta={cta}
-        />
+          <ServicesList
+            services={services}
+            cardsRef={cardsRef}
+            ctaRef={ctaRef}
+            cta={cta}
+          />
 
-        <ServicesExtras />
-      </main>
+          <ServicesExtras />
+        </main>
+
+        <FooterSection />
+      </div>
     </>
   );
 }

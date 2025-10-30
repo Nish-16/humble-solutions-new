@@ -7,9 +7,7 @@ import AboutSection from "./components/AboutSection";
 import ServicesSection from "./components/ServicesSection";
 import FeaturesSection from "./components/FeaturesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
-import TimelineSection from "./components/Timeline";
 import FooterSection from "./components/FooterSection";
-import Earth from "./components/Earth";
 
 export default function Home() {
   const pathname = usePathname();
@@ -22,9 +20,7 @@ export default function Home() {
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black text-white relative z-10">
         <HeroSection key={pathname} />
         {/* in app/page.tsx (or wherever) */}
-        <Earth size="h-[100vh]" textureUrl="/textures/earth.jpg" />
         <ServicesSection />
-        <TimelineSection />
         <AboutSection />
         <FeaturesSection />
         <TestimonialsSection />

@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import GalaxyBackground from "./GalaxyBackground";
+import { infoBoxes } from "./data/hero_data";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,51 +14,6 @@ type EarthProps = {
   textureUrl?: string;
 };
 
-type InfoBoxData = {
-  id: string;
-  title: string;
-  description: string;
-  position: string; // Tailwind position classes
-};
-
-const infoBoxes: InfoBoxData[] = [
-  {
-    id: "box-1",
-    title: "Our Mission",
-    description: "To deliver innovative and humble solutions globally.",
-    position: "top-16 left-16",
-  },
-  {
-    id: "box-2",
-    title: "Our Team",
-    description: "A passionate group of developers and designers.",
-    position: "top-1/2 left-16 -translate-y-1/2",
-  },
-  {
-    id: "box-3",
-    title: "Core Services",
-    description: "Web development, UI/UX design, and cloud integration.",
-    position: "bottom-16 left-16",
-  },
-  {
-    id: "box-4",
-    title: "Our Portfolio",
-    description: "Explore our diverse range of successful projects.",
-    position: "top-16 right-16",
-  },
-  {
-    id: "box-5",
-    title: "Testimonials",
-    description: "What our valued clients have to say about us.",
-    position: "top-1/2 right-16 -translate-y-1/2",
-  },
-  {
-    id: "box-6",
-    title: "Contact Us",
-    description: "Let's build something amazing together.",
-    position: "bottom-16 right-16",
-  },
-];
 
 export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -167,58 +123,58 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
 
   // === Info Box Animations ===
   useEffect(() => {
-    if (!sectionRef.current) return;
+  if (!sectionRef.current) return;
 
-    const boxes = sectionRef.current.querySelectorAll<HTMLElement>(".info-box");
-    const triggers: ScrollTrigger[] = [];
+  const boxes = sectionRef.current.querySelectorAll<HTMLElement>(".info-box");
+  const triggers: ScrollTrigger[] = [];
 
-    boxes.forEach((box, index) => {
-      const rect = box.getBoundingClientRect();
-      const sectionRect = sectionRef.current!.getBoundingClientRect();
+  boxes.forEach((box, index) => {
+    // Calculate start position (center of section)
+    const sectionRect = sectionRef.current!.getBoundingClientRect();
+    const rect = box.getBoundingClientRect();
 
-      // Compute position relative to section center
-      const startX =
-        sectionRect.width / 2 - (rect.left - sectionRect.left + rect.width / 2);
-      const startY =
-        sectionRect.height / 2 - (rect.top - sectionRect.top + rect.height / 2);
+    const startX =
+      sectionRect.width / 2 -
+      (rect.left - sectionRect.left + rect.width / 2);
+    const startY =
+      sectionRect.height / 2 -
+      (rect.top - sectionRect.top + rect.height / 2);
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current!,
-          start: "top center",
-          toggleActions: "play reverse play reverse",
-        },
-      });
+    // GSAP timeline per box
+    const tl = gsap.timeline({
+    scrollTrigger: {
+    trigger: sectionRef.current!,
+    start: "top-=200 center",      // starts when section top hits center of viewport
+    end: "center-=100 center",     // ends when section bottom hits bottom of viewport
+    scrub: true,              // smooth scroll animation
+    toggleActions: "restart reverse restart reverse",
+  },
+});
 
-      tl.fromTo(
-        box,
-        { x: startX, y: startY, scale: 0.5, opacity: 0 },
-        {
-          x: 0,
-          y: 0,
-          scale: 1,
-          opacity: 1,
-          duration: 1,
-          ease: "power2.out",
-          delay: index * 0.1,
-        }
-      );
 
-      // subtle floating effect
-      tl.to(
-        box,
-        { y: "+=10", repeat: -1, yoyo: true, ease: "sine.inOut", duration: 1 },
-        "+=0.5"
-      );
+    // Animate box from center to its final Tailwind position
+    tl.fromTo(
+      box,
+      { x: startX, y: startY, scale: 0.4, opacity: 0 },
+      {
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 0.2,
+        ease: "power3.out",
+        delay: index * 0.15,
+      }
+    );
 
-      triggers.push(tl.scrollTrigger!);
-    });
+    triggers.push(tl.scrollTrigger!);
+  });
 
-    return () => {
-      triggers.forEach((st) => st.kill());
-      gsap.killTweensOf(".info-box");
-    };
-  }, []);
+  return () => {
+    triggers.forEach((st) => st.kill());
+    gsap.killTweensOf(".info-box");
+  };
+}, []);
 
   const boxClasses =
     "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-20";

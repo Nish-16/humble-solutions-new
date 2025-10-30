@@ -1,13 +1,13 @@
 // src/components/data/hero_data.tsx
 
-export interface HeroInfoBox {
+export interface infoBoxes {
   id: string;
   title: string;
   description: string;
   position: string;
 }
 
-export const heroInfoBoxes: HeroInfoBox[] = [
+export const infoBoxes: infoBoxes[] = [
   {
     id: "box-1",
     title: "Our Mission",

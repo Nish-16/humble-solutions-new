@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, memo } from "react";
-import { timelineData, TimelineItemData } from "./data/Timeline_data";
-
+import { timelineData, TimelineItemData } from "../components/data/Timeline_data";
+import Navbar from "../components/Navbar";
 // --- Custom Hook to Load External Scripts ---
 const useScripts = (urls: string[]): boolean => {
     const [loaded, setLoaded] = useState(false);
@@ -43,6 +43,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(({ item, index }) => {
 
     return (
         <div className="timeline-item relative pl-12 sm:pl-0 sm:mb-24 last:mb-0">
+            <Navbar/>
             <div className={`flex flex-col sm:flex-row ${isEven ? "" : "sm:flex-row-reverse"} items-center gap-8`}>
 
                 {/* Image on opposite side */}
