@@ -77,15 +77,16 @@ const HeroSection: React.FC = () => {
             variableSpeed={{ min: 50, max: 120 }}
           />
           <p className="gsap-hero-desc text-lg sm:text-2xl max-w-2xl text-center mb-6 text-white/80">
-            Transforming Ideas into Intuitive Digital Experiences.
+            Boost Your Sales Exponentially With Memorable Digital Experiences
           </p>
           <p className="gsap-hero-desc text-base sm:text-xl max-w-2xl text-center mb-10 text-white/60">
-            We use technology to solve real-world problems for businesses and
-            people. Innovation, efficiency, and impact—delivered.
+            Our appealing and responsive mobile apps, websites, and user-centric/user-friendly 
+            UI/UX designs help craft the outstanding customer journeys that drive conversions 
+            and make our clients industry leaders. 
           </p>
           <a
             href="#services"
-            className="gsap-cta px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-lg font-semibold shadow-lg transition-colors mt-5"
+            className="gsap-cta px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-lg font-semibold shadow-lg transition-colors mt-1"
           >
             See Our Solutions
           </a>

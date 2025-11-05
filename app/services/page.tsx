@@ -11,10 +11,9 @@ const Navbar = dynamic(() => import("../components/Navbar"), { ssr: false });
 const FooterSection = dynamic(() => import("../components/FooterSection"), {
   ssr: false,
 });
-const GalaxyBackground = dynamic(
-  () => import("../components/GalaxyBackground"),
-  { ssr: false }
-);
+const ServicesBackground = dynamic(() => import("./ServicesBackground"), {
+  ssr: false,
+});
 
 const { hero, services, cta } = content;
 
@@ -118,7 +117,7 @@ export default function ServicesPage() {
     <>
       <Navbar />
       <div className="min-h-screen relative bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black">
-        <GalaxyBackground />
+        <ServicesBackground />
 
         <main className="relative z-10 max-w-7xl mx-auto py-20 px-6">
           <ServicesHero
