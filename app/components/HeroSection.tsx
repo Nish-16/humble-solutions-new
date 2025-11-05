@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TypingText } from "./UI/TypingTextDemo";
@@ -17,7 +17,8 @@ const HeroSection: React.FC = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       // === HERO ENTRANCE ===
-      gsap.timeline({ defaults: { ease: "expo.out", duration: 1.8 } })
+      gsap
+        .timeline({ defaults: { ease: "expo.out", duration: 1.8 } })
         .from(".gsap-hero-title", { y: 60, scale: 0.92, opacity: 0 })
         .from(".gsap-hero-desc", { y: 40, stagger: 0.18, opacity: 0 }, "-=1.5")
         .from(".gsap-cta", { y: 30, scale: 0.95, opacity: 0 }, "-=1.2");
@@ -41,13 +42,12 @@ const HeroSection: React.FC = () => {
           y: -150,
           scale: 0.9,
           ease: "power1.inOut",
-        })
-          .fromTo(
-            nextSectionRef.current,
-            { opacity: 0, y: 100 },
-            { opacity: 1, y: 0, ease: "power2.out" },
-            "<50%" // starts halfway through fade-out
-          );
+        }).fromTo(
+          nextSectionRef.current,
+          { opacity: 0, y: 100 },
+          { opacity: 1, y: 0, ease: "power2.out" },
+          "<50%" // starts halfway through fade-out
+        );
       }
     }, sectionRef);
 
@@ -80,9 +80,10 @@ const HeroSection: React.FC = () => {
             Boost Your Sales Exponentially With Memorable Digital Experiences
           </p>
           <p className="gsap-hero-desc text-base sm:text-xl max-w-2xl text-center mb-10 text-white/60">
-            Our appealing and responsive mobile apps, websites, and user-centric/user-friendly 
-            UI/UX designs help craft the outstanding customer journeys that drive conversions 
-            and make our clients industry leaders. 
+            Our appealing and responsive mobile apps, websites, and
+            user-centric/user-friendly UI/UX designs help craft the outstanding
+            customer journeys that drive conversions and make our clients
+            industry leaders.
           </p>
           <a
             href="#services"
@@ -94,11 +95,35 @@ const HeroSection: React.FC = () => {
       </section>
 
       {/* === EARTH SECTION (CROSSFADE TARGET) === */}
+      {/* Render Earth only on md+ screens to avoid mounting Three.js on small devices */}
       <div ref={nextSectionRef} className="opacity-0">
-        <Earth size="h-[100vh]" textureUrl="/textures/earth.jpg" />
+        {/** Use client-side media query so Earth (heavy Three.js) isn't mounted on mobile **/}
+        {typeof window !== "undefined" && <ClientEarthRender />}
       </div>
     </>
   );
 };
 
 export default HeroSection;
+
+function ClientEarthRender() {
+  const [showEarth, setShowEarth] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setShowEarth(mq.matches);
+    update();
+    // Prefer modern API but fallback for older browsers
+    if (mq.addEventListener) mq.addEventListener("change", update);
+    else mq.addListener(update);
+
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", update);
+      else mq.removeListener(update);
+    };
+  }, []);
+
+  return showEarth ? (
+    <Earth size="h-[100vh]" textureUrl="/textures/earth.jpg" />
+  ) : null;
+}
