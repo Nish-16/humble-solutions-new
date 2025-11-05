@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function ServiceCard({ service, index, setRef }: Props) {
-  // use an HTMLDivElement ref (article is a div/section-type element)
+  // use an HTMLDivElement ref
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -84,10 +84,7 @@ export default function ServiceCard({ service, index, setRef }: Props) {
     el.style.setProperty("--my", `${Math.round(rect.height / 3)}px`);
     el.style.setProperty("--light-opacity", "0.95");
     // enable pulsing animation for keyboard focus
-    el.style.setProperty(
-      "--light-pulse",
-      "pulseLight 3s ease-in-out infinite"
-    );
+    el.style.setProperty("--light-pulse", "pulseLight 3s ease-in-out infinite");
   };
 
   const onBlur = (e: React.FocusEvent<HTMLElement>) => {
@@ -98,7 +95,7 @@ export default function ServiceCard({ service, index, setRef }: Props) {
 
   return (
     <>
-      <article
+      <div
         // attach ref here and also call user-provided setRef if present
         ref={(el) => {
           cardRef.current = el;
@@ -144,7 +141,9 @@ export default function ServiceCard({ service, index, setRef }: Props) {
         />
         <div className="flex items-center gap-4">
           <div className="flex-none w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-cyan-600/20 to-cyan-500/10 text-cyan-300 flex items-center justify-center ring-1 ring-white/6 group-hover:scale-105 transition-transform">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 text-cyan-300">{IconNode}</div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 text-cyan-300">
+              {IconNode}
+            </div>
           </div>
 
           <div className="flex-1">
@@ -173,10 +172,10 @@ export default function ServiceCard({ service, index, setRef }: Props) {
             aria-hidden
             className="text-white/40 hover:text-white/70 transition-opacity"
           >
-            Explore → 
+            Explore →
           </a>
         </div>
-      </article>
+      </div>
 
       {/* styled-jsx defines the pulse animation and hover behaviour for Next.js */}
       <style jsx>{`

@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import GalaxyBackground from "../components/GalaxyBackground";
 import AboutSection from "../components/AboutSection";
+import ProfileCard from "./ProfileCard";
 import FooterSection from "../components/FooterSection";
 
 export default function About() {
@@ -40,16 +41,19 @@ export default function About() {
             </div>
 
             <div className="w-full sm:w-80 lg:w-96 mx-auto">
-              <div className="rounded-2xl p-4 bg-gradient-to-br from-cyan-400/10 to-blue-500/8 border border-cyan-400/6 shadow-xl">
-                <div className="p-6 bg-black/40 rounded-xl">
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    Why choose us
-                  </h3>
-                  <ul className="text-white/80 space-y-2 text-sm">
-                    <li>Design-first product development</li>
-                    <li>Scalable cloud architecture</li>
-                    <li>Data-driven decision making</li>
-                  </ul>
+              <div className="rounded-2xl p-4 bg-gradient-to-br from-cyan-400/6 to-blue-500/6 border border-cyan-400/6 shadow-xl">
+                <div className="p-2 bg-black/20 rounded-xl">
+                  <ProfileCard
+                    avatarUrl={`https://picsum.photos/seed/profile/800/800`}
+                    miniAvatarUrl={`https://picsum.photos/seed/profile-mini/80/80`}
+                    name="Humble Solutions"
+                    title="Design & Engineering"
+                    handle="humble-solutions"
+                    status="Available"
+                    contactText="Get in touch"
+                    showUserInfo={true}
+                    enableTilt={true}
+                  />
                 </div>
               </div>
             </div>
