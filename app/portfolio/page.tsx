@@ -1,31 +1,25 @@
-import Navbar from "../components/Navbar";
-import PortfolioGrid from "./PortfolioGrid";
-import GalaxyBackground from "../components/GalaxyBackground";
+"use client";
+import React from "react";
+import Navbar from "./../components/Navbar";
+import GalaxyBackground from "./GalaxyBackground";
+import Hero from "./Hero";
+import Services from "./Services";
+import ProjectsGrid from "./ProjectGrid";
+import StatsProcess from "./StatsProcess";
+import CTA from "./CTA";
+import Footer from "./../components/FooterSection";
 
-export default function Portfolio() {
+export default function Page() {
   return (
-    <div className="relative min-h-screen">
-      {/* animated galaxy canvas (absolute, pointer-events-none) */}
+    <div className="relative min-h-screen bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] ">
       <GalaxyBackground />
-
-      <div className="relative z-10">
-        <Navbar />
-
-        <main className="max-w-6xl mx-auto py-16 px-4">
-          <div className="bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl border border-cyan-400/10 p-10">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 text-cyan-400">
-                Portfolio
-              </h1>
-              <p className="text-lg text-white/80 font-light">
-                Check out some of our recent projects and case studies.
-              </p>
-            </div>
-
-            <PortfolioGrid />
-          </div>
-        </main>
-      </div>
+      <Navbar />
+      <Hero />
+      <Services />
+      <ProjectsGrid />
+      <StatsProcess />
+      <CTA />
+      <Footer />
     </div>
   );
 }
