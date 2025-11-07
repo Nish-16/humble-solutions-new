@@ -103,7 +103,7 @@ const TestimonialsSection: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <h2
           ref={headingRef}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-16 text-center"
+          className="text-3xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-16 text-center"
           aria-label="What Our Clients Say"
         >
           {"What Our Clients Say".split("").map((char, index) => (

@@ -1,8 +1,11 @@
 'use client'; // This directive is essential for components using hooks in Next.js App Router
-
+import Lottie from "lottie-react";
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import team from "../../public/team.json";
+import idea from "../../public/idea.json";
 
 // --- TypeScript Interface for our data ---
 interface Feature {
@@ -17,30 +20,35 @@ const featuresData: Feature[] = [
     title: "Innovative Solutions",
     description: "We leverage the latest tech to deliver creative, effective results.",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-4 text-blue-400">
-        <path d="M7 12.5l3 3 7-7" />
-        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2.5 21.5l4.5-.838A9.955 9.955 0 0 0 12 22z" />
-      </svg>
+      <Lottie
+            animationData={idea}
+            loop={true}
+            className="w-20 h-30"
+            />
     ),
   },
   {
     title: "Expert Team",
     description: "Our passionate professionals are experts in AI, cloud, and web.",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-4 text-blue-400">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="8.5" cy="7" r="4" />
-        <polyline points="17 11 19 13 23 9" />
-      </svg>
+      <Lottie
+            animationData={team}
+            loop={true}
+            className="w-20 h-30"
+            />
     ),
   },
   {
     title: "Client Focused",
     description: "We listen, adapt, and deliver solutions tailored to your needs.",
     icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-4 text-blue-400">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
+        <img 
+      src="/Support.gif" 
+      alt="Support Icon" 
+      width={100} 
+      height={100}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
 ];

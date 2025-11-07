@@ -17,10 +17,10 @@ export const timelineData: TimelineItemData[] = [
     description:
       "The journey began with a single idea, laying the groundwork for what was to come.",
     icon: "💡",
-    cardIcon: "📝",
+    cardIcon: "Idea-icon.json",     // ✅ now a Lottie file
     details:
-      "We brainstormed, researched, and validated our concept with industry experts and potential users. Early sketches and wireframes set the vision.",
-    image: "/images/2021-inception.jpg", // example image path
+      "We brainstormed, researched, and validated our concept...",
+    image: "Idea.json",        // ✅ now a Lottie file
   },
   {
     year: "2022",
@@ -28,42 +28,42 @@ export const timelineData: TimelineItemData[] = [
     description:
       "Heads down, we brought the concept to life, building the first functional prototype.",
     icon: "👨‍💻",
-    cardIcon: "🛠️",
+    cardIcon: "development-icon.json",
     details:
-      "Our team worked tirelessly, iterating on design and functionality. We overcame technical challenges and built a scalable foundation.",
-    image: "/images/2022-prototyping.jpg",
+      "Our team worked tirelessly...",
+    image: "development.json",
   },
   {
     year: "2023",
     title: "Beta Launch & Feedback",
     description:
-      "We launched a closed beta, and user feedback helped us refine and improve the experience.",
+      "We launched a closed beta...",
     icon: "🚀",
-    cardIcon: "🔍",
+    cardIcon: "Feedback-icon.json",
     details:
-      "Beta users provided invaluable feedback. We added new features, improved performance, and polished the user experience.",
-    image: "/images/2023-beta.jpg",
+      "Beta users provided invaluable feedback...",
+    image: "Feedback.json",
   },
   {
     year: "2024",
     title: "Public Release & Growth",
     description:
-      "The platform saw rapid adoption and growth, validating our initial vision.",
+      "The platform saw rapid adoption and growth...",
     icon: "📈",
-    cardIcon: "🌍",
+    cardIcon: "growth-icon.json",
     details:
-      "We expanded our team, scaled our infrastructure, and formed strategic partnerships. Our user base grew globally.",
-    image: "/images/2024-release.jpg",
+      "We expanded our team...",
+    image: "growth.json",
   },
   {
     year: "2025",
     title: "Future Innovations",
     description:
-      "We are continuously exploring new technologies like AI to redefine industry standards.",
+      "We are continuously exploring new technologies...",
     icon: "🌌",
-    cardIcon: "🤖",
+    cardIcon: "innovation-icon.json",
     details:
-      "We are investing in AI, automation, and new markets. Our roadmap includes exciting features and industry collaborations.",
-    image: "/images/2025-innovations.jpg",
+      "We are investing in AI, automation...",
+    image: "innovation.json",
   },
 ];

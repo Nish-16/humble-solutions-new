@@ -5,6 +5,7 @@ import ServicesHero from "./ServicesHero";
 import ServicesList from "./ServicesList";
 import ServicesExtras from "./ServicesExtras";
 import content from "./content";
+import SmoothScroll from "../journey/SmoothScroll";
 
 // Dynamically import components that rely on browser-only APIs
 const Navbar = dynamic(() => import("../components/Navbar"), { ssr: false });
@@ -115,6 +116,7 @@ export default function ServicesPage() {
 
   return (
     <>
+    <SmoothScroll/>
       <Navbar />
       <div className="min-h-screen relative bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black">
         <ServicesBackground />

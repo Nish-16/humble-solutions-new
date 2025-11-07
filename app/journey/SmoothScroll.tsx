@@ -36,6 +36,35 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     rafId = requestAnimationFrame(raf);
 
+    // Intercept internal anchor clicks and use Lenis for smooth scrolling
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      const anchor =
+        target.closest &&
+        (target.closest('a[href^="#"]') as HTMLAnchorElement | null);
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href || href === "#") return;
+      const id = href.replace(/^#/, "");
+      const el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      try {
+        const scroller = document.scrollingElement || document.documentElement;
+        const current = scroller.scrollTop || window.scrollY || 0;
+        const targetY = el.getBoundingClientRect().top + current;
+        if (lenis && typeof lenis.scrollTo === "function") {
+          lenis.scrollTo(targetY);
+        } else {
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      } catch (err) {
+        // fallback: do nothing special
+      }
+    };
+    document.addEventListener("click", onClick);
+
     // Integrate with GSAP ScrollTrigger if available
     try {
       const ScrollTrigger = (window as any).ScrollTrigger;
@@ -79,6 +108,7 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
+      document.removeEventListener("click", onClick);
       try {
         if (lenis && typeof lenis.destroy === "function") lenis.destroy();
       } catch (e) {

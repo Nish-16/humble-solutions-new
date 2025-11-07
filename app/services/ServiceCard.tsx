@@ -140,8 +140,8 @@ export default function ServiceCard({ service, index, setRef }: Props) {
           }
         />
         <div className="flex items-center gap-4">
-          <div className="flex-none w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-cyan-600/20 to-cyan-500/10 text-cyan-300 flex items-center justify-center ring-1 ring-white/6 group-hover:scale-105 transition-transform">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 text-cyan-300">
+          <div className="flex-none w-14 h-14 sm:w-16 sm:h-16 rounded-lg  text-cyan-300 flex items-center justify-center  group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 sm:w-18 sm:h-18 text-cyan-300">
               {IconNode}
             </div>
           </div>

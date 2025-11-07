@@ -1,3 +1,6 @@
+import Lottie from "lottie-react";
+import design from "../../public/services/design.json"; // adjust path based on your project
+
 export type ServiceItem = {
   id: string;
   title: string;
@@ -29,14 +32,13 @@ export const services = [
     title: "Custom Software",
     desc: "Tailored web, mobile, and cloud solutions built to your needs.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 2v20M2 12h20"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <img 
+      src="/Web.gif" 
+      alt="AI Icon" 
+      width={150} 
+      height={50}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
   {
@@ -44,9 +46,13 @@ export const services = [
     title: "AI & Automation",
     desc: "Automate workflows and gain insights with modern ML solutions.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-      </svg>
+      <img 
+      src="/AI.gif" 
+      alt="AI Icon" 
+      width={150} 
+      height={50}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
   {
@@ -54,17 +60,13 @@ export const services = [
     title: "Consulting",
     desc: "Strategy, architecture, and go-to-market guidance for tech teams.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <rect
-          x="4"
-          y="4"
-          width="16"
-          height="16"
-          rx="4"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      </svg>
+      <img 
+      src="/Consulting.gif" 
+      alt="Consulting Icon" 
+      width={150} 
+      height={50}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
   {
@@ -72,14 +74,11 @@ export const services = [
     title: "Design & UX",
     desc: "Human-centered interfaces and product design that convert.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M3 12h18M12 3v18"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <Lottie
+            animationData={design}
+            loop={true}
+            className="w-48 h-30 sm:w-56 sm:h-56 md:w-20 md:h-20"
+            />
     ),
   },
   {
@@ -87,14 +86,13 @@ export const services = [
     title: "Cloud & DevOps",
     desc: "Reliable infrastructure, CI/CD, and cost-optimized deployments.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M20 17.58A5 5 0 0018 7h-1.26A8 8 0 104 16.25"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <img 
+      src="/Cloud.gif" 
+      alt="Cloud Icon" 
+      width={150} 
+      height={50}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
   {
@@ -102,14 +100,13 @@ export const services = [
     title: "Support & Maintenance",
     desc: "Ongoing support to keep your systems healthy and secure.",
     icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 1v22M1 12h22"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <img 
+      src="/Support.gif" 
+      alt="Support Icon" 
+      width={150} 
+      height={50}
+      style={{ objectFit: "contain" }}
+    />
     ),
   },
 ];

@@ -8,11 +8,13 @@ import ProjectsGrid from "./ProjectGrid";
 import StatsProcess from "./StatsProcess";
 import CTA from "./CTA";
 import Footer from "./../components/FooterSection";
+import SmoothScroll from "../journey/SmoothScroll";
 
 export default function Page() {
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] ">
       <GalaxyBackground />
+      <SmoothScroll />
       <Navbar />
       <Hero />
       <Services />

@@ -31,7 +31,7 @@ export default function ProjectsGrid() {
   return (
     <section id="projects" className="mx-auto max-w-7xl px-6 py-14">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-semibold md:text-4xl">
+        <h2 className="text-xl font-semibold md:text-4xl ">
           Selected projects
         </h2>
         <div className="flex gap-2 rounded-full border border-neutral-300/40 bg-gray-800 backdrop-blur-md p-1">
