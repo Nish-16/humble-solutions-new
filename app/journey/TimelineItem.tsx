@@ -28,7 +28,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(({ item, index }) => {
               animationData={require(`@/public/Journey/${item.image}`)}
               loop
               autoplay
-              className="w-46 h-46 sm:w-65 sm:h-65 transition-transform duration-300 hover:scale-105"
+              className="w-46 h-46 sm:w-75 sm:h-75 transition-transform duration-300 hover:scale-105"
             />
           </div>
         ) : (
@@ -52,7 +52,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(({ item, index }) => {
 
             {/* ✅ Card Lottie (replaces cardIcon emoji) */}
             {item.cardIcon && (
-              <div className=" w-46 h-46 sm:w-56 sm:h-56">
+              <div className=" w-30 h-30 sm:w-40 sm:h-40">
                 <Lottie
                   animationData={require(`@/public/Journey/${item.cardIcon}`)}
                   loop

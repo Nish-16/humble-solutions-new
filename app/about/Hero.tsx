@@ -1,5 +1,6 @@
 "use client";
-
+import Lottie from "lottie-react";
+import about from "@/public/about/about-1.json"; 
 import React from "react";
 import { motion, Variants } from "framer-motion";
 
@@ -47,7 +48,7 @@ export default function Hero() {
       {/* Decorative accent */}
       <div className="pointer-events-none absolute -inset-6 rounded-3xl blur-3xl opacity-10 bg-gradient-to-br from-cyan-400 to-blue-500" />
 
-      {/* Centered Heading */}
+      {/* Heading */}
       <motion.h1
         variants={textVariants}
         className="text-center text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-10"
@@ -55,13 +56,11 @@ export default function Hero() {
         Humble Solutions
       </motion.h1>
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="relative max-w-6xl w-full flex flex-col lg:flex-row items-center gap-10">
+        
         {/* Text Section */}
-        <motion.div
-          variants={textVariants}
-          className="flex-1 text-center lg:text-left"
-        >
+        <motion.div variants={textVariants} className="flex-1 text-center lg:text-left">
           <p className="text-base sm:text-lg text-white/80 max-w-3xl mx-auto lg:mx-0">
             We build elegant, reliable software and cloud systems that help
             teams move faster. Design-forward, pragmatic, and focused on
@@ -90,17 +89,19 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Right-side Preview */}
-        <motion.div
-          variants={boxVariants}
-          className="w-full sm:w-80 lg:w-96 mx-auto"
-        >
+        {/* Preview / Lottie */}
+        <motion.div variants={boxVariants} className="w-full sm:w-80 lg:w-96 mx-auto">
           <div className="rounded-2xl p-4 bg-gradient-to-br from-cyan-400/6 to-blue-500/6 border border-cyan-400/6 shadow-xl transform transition-all hover:-translate-y-1">
-            <div className="p-2 bg-black/10 rounded-xl h-44 sm:h-56 flex items-center justify-center text-white/40">
-              <div className="text-sm">3D Preview</div>
+            <div className="p-2 bg-black/10 rounded-xl h-44 sm:h-56 flex items-center justify-center">
+              <Lottie 
+                animationData={about}
+                loop
+                autoplay
+              />
             </div>
           </div>
         </motion.div>
+
       </div>
     </motion.section>
   );

@@ -60,7 +60,7 @@ const TestimonialsSection: React.FC = () => {
           trigger: sectionRef.current,
           start: "top 80%", // Animation starts when 70% of the section is visible
           end: "bottom 40%",
-          toggleActions: "play reverse play reverse", // Play on enter, reverse on exit
+          toggleActions: "play none none none", // Play on enter, reverse on exit
         },
       });
 

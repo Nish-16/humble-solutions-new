@@ -89,7 +89,7 @@ export default function StatsProcess() {
 
 function Stat({ number, label }: { number: string; label: string }) {
   return (
-    <div className="rounded-xl border border-neutral-700 bg-neutral-900 p-4 text-center shadow-sm">
+    <div className="rounded-xl border border-neutral-700 bg-gray-900 p-4 text-center shadow-sm">
       <div className="text-2xl font-semibold tracking-tight text-neutral-100">
         {number}
       </div>

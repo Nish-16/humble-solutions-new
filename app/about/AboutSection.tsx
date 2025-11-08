@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Lottie from "lottie-react";
+import About from "@/public/about/About.json";
 import { motion, Variants } from "framer-motion";
 
 export default function AboutSection() {
@@ -105,62 +107,13 @@ export default function AboutSection() {
           variants={svgVariants}
           className="order-1 lg:order-2 flex items-center justify-center"
         >
-          <div className="w-64 h-64 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-white/6 flex items-center justify-center">
-            <motion.svg
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: "easeOut" as const }}
-              width="160"
-              height="160"
-              viewBox="0 0 160 160"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="g1" x1="0" x2="1">
-                  <stop offset="0" stopColor="#06b6d4" stopOpacity="0.9" />
-                  <stop offset="1" stopColor="#3b82f6" stopOpacity="0.9" />
-                </linearGradient>
-              </defs>
-              <rect
-                x="0"
-                y="0"
-                width="160"
-                height="160"
-                rx="20"
-                fill="url(#g1)"
-                opacity="0.08"
-              />
-              <g transform="translate(32,32) scale(0.75)">
-                <motion.circle
-                  cx="48"
-                  cy="48"
-                  r="36"
-                  fill="#0ea5b7"
-                  opacity="0.12"
-                  animate={{ r: [34, 38, 34] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 4,
-                    ease: "easeInOut" as const,
-                  }}
-                />
-                <motion.path
-                  d="M24 72 C36 52, 96 52, 112 72"
-                  stroke="#60a5fa"
-                  strokeWidth="4"
-                  strokeOpacity="0.18"
-                  fill="none"
-                  animate={{ pathLength: [0, 1, 0] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 6,
-                    ease: "easeInOut" as const,
-                  }}
-                />
-              </g>
-            </motion.svg>
+          <div className="w-40 h-40 sm:w-64 sm:h-64 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-white/6 flex items-center justify-center">
+            <Lottie
+              animationData={About}
+              loop
+              autoplay
+              className="w-30 h-30 sm:w-64 sm:h-64"
+            />
           </div>
         </motion.div>
       </div>
