@@ -1,180 +1,94 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import * as THREE from "three";
+import Lottie from "lottie-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import GalaxyBackground from "./GalaxyBackground";
 import { infoBoxes } from "./data/hero_data";
+import Globe from "@/public/Home/Earth.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type EarthProps = {
   size?: string;
-  textureUrl?: string;
+  lottieData: string; // <-- pass Lottie JSON here
 };
 
-
-export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
+export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLDivElement | null>(null);
 
-  // === Three.js Setup ===
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    let renderer: THREE.WebGLRenderer | null = null;
-    let rafId = 0;
-    let geometry: THREE.SphereGeometry | null = null;
-    let material: THREE.MeshStandardMaterial | null = null;
-    let resizeObserver: ResizeObserver | null = null;
-
-    const initThree = () => {
-      const container = canvasRef.current!;
-      const { width, height } = container.getBoundingClientRect();
-
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(width, height);
-      renderer.setClearColor(0x000000, 0);
-
-      const existingCanvas = container.querySelector("canvas");
-      if (existingCanvas) existingCanvas.remove();
-
-      const canvas = renderer.domElement as HTMLCanvasElement;
-      canvas.className = "absolute top-0 left-0 w-full h-full z-10";
-      container.appendChild(canvas);
-
-      // Scene
-      const scene = new THREE.Scene();
-
-      // Note: GalaxyBackground component renders a full-screen starfield behind this canvas.
-      // Keep Earth scene focused on the Earth mesh and lights.
-
-      // Camera
-      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-      camera.position.set(0, 0, 3.2);
-
-      // Lights
-      const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
-      scene.add(hemi);
-
-      // Earth
-      geometry = new THREE.SphereGeometry(1, 64, 64);
-      material = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        metalness: 0.1,
-        roughness: 1,
-      });
-
-      if (textureUrl) {
-        new THREE.TextureLoader().load(
-          textureUrl,
-          (tex) => {
-            if (material) {
-              material.map = tex;
-              material.needsUpdate = true;
-            }
-          },
-          undefined,
-          () => {
-            console.warn("Failed to load Earth texture:", textureUrl);
-          }
-        );
-      }
-
-      const earthMesh = new THREE.Mesh(geometry, material);
-      earthMesh.rotation.x = 0.25;
-      scene.add(earthMesh);
-
-      // Animation loop
-      const animate = () => {
-        earthMesh.rotation.y += 0.005;
-        renderer!.render(scene, camera);
-        rafId = requestAnimationFrame(animate);
-      };
-      animate();
-
-      // Resize handling
-      resizeObserver = new ResizeObserver(() => {
-        const { width: w, height: h } = container.getBoundingClientRect();
-        renderer!.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      });
-      resizeObserver.observe(container);
-
-      return () => {
-        cancelAnimationFrame(rafId);
-        resizeObserver?.disconnect();
-        if (renderer) {
-          renderer.domElement.remove();
-          renderer.dispose();
-        }
-        geometry?.dispose();
-        material?.map?.dispose();
-      };
-    };
-
-    const cleanup = initThree();
-    return () => cleanup && cleanup();
-  }, [textureUrl, size]);
-
-  // === Info Box Animations ===
+  // ✅ Info Box Animations
   useEffect(() => {
   if (!sectionRef.current) return;
 
-  const boxes = sectionRef.current.querySelectorAll<HTMLElement>(".info-box");
-  const triggers: ScrollTrigger[] = [];
+  // Allow layout to finish
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const boxes = sectionRef.current!.querySelectorAll<HTMLElement>(".info-box");
+      const triggers: ScrollTrigger[] = [];
 
-  boxes.forEach((box, index) => {
-    // Calculate start position (center of section)
-    const sectionRect = sectionRef.current!.getBoundingClientRect();
-    const rect = box.getBoundingClientRect();
+      const sectionRect = sectionRef.current!.getBoundingClientRect();
+      const centerX = sectionRect.width / 2;
+      const centerY = sectionRect.height / 2;
 
-    const startX =
-      sectionRect.width / 2 -
-      (rect.left - sectionRect.left + rect.width / 2);
-    const startY =
-      sectionRect.height / 2 -
-      (rect.top - sectionRect.top + rect.height / 2);
+      // ✅ GLOBE ROTATION SPEED UP ON SCROLL
+      gsap.to(".earth-lottie", {
+        rotation: 45, // degrees
+        scrollTrigger: {
+          trigger: sectionRef.current!,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+        ease: "none",
+      });
 
-    // GSAP timeline per box
-    const tl = gsap.timeline({
-    scrollTrigger: {
-    trigger: sectionRef.current!,
-    start: "top-=200 center",      // starts when section top hits center of viewport
-    end: "center-=100 center",     // ends when section bottom hits bottom of viewport
-    scrub: true,              // smooth scroll animation
-    toggleActions: "restart reverse restart reverse",
-  },
-});
+      boxes.forEach((box, index) => {
+        const rect = box.getBoundingClientRect();
 
+        // ✅ Start at center → move outward
+        const startX = centerX - (rect.left - sectionRect.left + rect.width / 2);
+        const startY = centerY - (rect.top - sectionRect.top + rect.height / 2);
 
-    // Animate box from center to its final Tailwind position
-    tl.fromTo(
-      box,
-      { x: startX, y: startY, scale: 0.4, opacity: 0 },
-      {
-        x: 0,
-        y: 0,
-        scale: 1,
-        opacity: 1,
-        duration: 0.2,
-        ease: "power3.out",
-        delay: index * 0.15,
-      }
-    );
+        // ✅ Orbit offset before settling
+        const orbitX = (index % 2 === 0 ? 1 : -1) * 40;   // horizontal wobble
+        const orbitY = index * 10;                       // slight vertical offset
 
-    triggers.push(tl.scrollTrigger!);
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current!,
+            start: "top center",
+            end: "center+=100 center",
+            scrub: 1,
+          },
+        });
+
+        // ✅ Center → Orbit
+        tl.fromTo(
+          box,
+          { x: startX, y: startY, scale: 0.4, opacity: 0 },
+          { x: orbitX, y: orbitY, scale: 1, opacity: 1, ease: "power3.out" }
+        );
+
+        // ✅ Orbit → Final Position
+        tl.to(box, {
+          x: 0,
+          y: 0,
+          ease: "power2.out",
+        });
+
+        triggers.push(tl.scrollTrigger!);
+      });
+
+      return () => {
+        triggers.forEach((st) => st.kill());
+        gsap.killTweensOf(".info-box");
+      };
+    });
   });
-
-  return () => {
-    triggers.forEach((st) => st.kill());
-    gsap.killTweensOf(".info-box");
-  };
 }, []);
+
 
   const boxClasses =
     "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-20";
@@ -184,16 +98,21 @@ export default function Earth({ size = "h-[80vh]", textureUrl }: EarthProps) {
       ref={sectionRef}
       className={`relative w-full ${size} flex items-center justify-center overflow-hidden`}
     >
-      {/* Galaxy background sits behind everything */}
+      {/* ⭐ Background Galaxy */}
       <GalaxyBackground />
 
-      {/* Three.js Canvas */}
-      <div
-        ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full z-10"
-      />
+      {/* ✅ Lottie Earth */}
+      <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 pointer-events-none">
+        <Lottie
+          animationData={Globe}
+          loop
+          autoplay
+          className="earth-lottie w-[150vh] h-[150vh]"
+        />
 
-      {/* Info Boxes */}
+      </div>
+
+      {/* ✅ Info Boxes */}
       {infoBoxes.map((box) => (
         <div key={box.id} className={`${boxClasses} ${box.position}`}>
           <div className="w-12 h-1 bg-[#b6e0fe] rounded-full mb-3"></div>

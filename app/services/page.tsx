@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import ServicesHero from "./ServicesHero";
@@ -18,17 +19,28 @@ const ServicesBackground = dynamic(() => import("./ServicesBackground"), {
 
 const { hero, services, cta } = content;
 
+type MaybeHTMLElement = HTMLElement | null;
+type MaybeDivArray = Array<HTMLDivElement | null>;
+
+// Minimal shape for the small subset of GSAP we use
+type GsapContextReturn = { revert: () => void };
+type GsapShape = {
+  registerPlugin?: (...plugins: unknown[]) => void;
+  context: (fn: () => void, scope?: unknown) => GsapContextReturn;
+  from?: (target: unknown, vars: unknown) => unknown;
+};
+
 export default function ServicesPage() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const cardsRef = useRef<MaybeDivArray>([]);
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
-  // The useEffect for GSAP animations remains unchanged as it is already well-implemented.
+  // The useEffect for GSAP animations remains unchanged in behavior.
   useEffect(() => {
-    let ctx: any = null;
-    let gsap: any = null;
-    let ScrollTrigger: any = null;
-    let idleId: any = null;
+    let ctx: GsapContextReturn | null = null;
+    let gsap: GsapShape | null = null;
+    let ScrollTrigger: unknown | null = null;
+    let idleId: number | null = null;
 
     if (typeof window === "undefined") return;
 
@@ -36,45 +48,89 @@ export default function ServicesPage() {
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const connection = (navigator as any).connection;
+    const connection = (navigator as unknown as { connection?: unknown })
+      .connection as
+      | Partial<{ saveData?: boolean; effectiveType?: string }>
+      | undefined;
+
     const saveData =
       connection &&
-      (connection.saveData || /2g/.test(connection.effectiveType || ""));
+      (connection.saveData === true ||
+        (/2g/.test((connection.effectiveType || "") as string) ?? false));
 
     if (prefersReduced || saveData) {
       return;
     }
 
-    const rIC =
-      (window as any).requestIdleCallback ||
-      function (cb: any) {
-        return setTimeout(cb, 300);
-      };
-    const cIC =
-      (window as any).cancelIdleCallback ||
-      function (id: any) {
-        clearTimeout(id);
-      };
+    // requestIdleCallback / cancelIdleCallback fallbacks
+    const rIC: (cb: () => void) => number =
+      (
+        window as unknown as {
+          requestIdleCallback?: (cb: () => void) => number;
+        }
+      ).requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
+
+    const cIC = (id?: number | null) => {
+      const raw = (
+        window as unknown as {
+          cancelIdleCallback?: (id?: number) => void;
+        }
+      ).cancelIdleCallback;
+
+      if (raw) {
+        // `cancelIdleCallback` implementations expect a `number | undefined`.
+        // Convert `null` to `undefined` when calling the native API.
+        raw(id === null ? undefined : (id as number | undefined));
+        return;
+      }
+
+      // Fallback for environments without `cancelIdleCallback`.
+      if (typeof id === "number") clearTimeout(id);
+    };
 
     idleId = rIC(async () => {
-      gsap = (await import("gsap")).default;
-      try {
-        const mod = await import("gsap/dist/ScrollTrigger");
-        ScrollTrigger = mod.ScrollTrigger || (mod as any).default;
-        gsap.registerPlugin(ScrollTrigger);
-      } catch (e) {}
+      // dynamic import of gsap
+      const gsapMod = await import("gsap");
+      // some bundlers expose gsap as default, others as named export; normalize
+      gsap = (gsapMod as unknown as { default?: unknown }).default
+        ? (gsapMod as unknown as { default?: GsapShape }).default!
+        : (gsapMod as unknown as unknown as GsapShape);
 
+      try {
+        // ScrollTrigger may be in a separate module path
+        const mod = await import("gsap/dist/ScrollTrigger");
+        ScrollTrigger =
+          (mod as unknown as { ScrollTrigger?: unknown }).ScrollTrigger ??
+          (mod as unknown as { default?: unknown }).default ??
+          null;
+
+        if (gsap && ScrollTrigger) {
+          // register plugin if available
+          try {
+            gsap.registerPlugin?.(ScrollTrigger);
+          } catch {
+            // ignore registration errors
+          }
+        }
+      } catch {
+        // ignore load failure of ScrollTrigger
+      }
+
+      if (!gsap) return;
+
+      // create GSAP context and animations
       ctx = gsap.context(() => {
         if (heroRef.current) {
-          gsap.from(heroRef.current, {
+          gsap?.from?.(heroRef.current, {
             y: -20,
             opacity: 0,
             duration: 0.7,
             ease: "power3.out",
           });
         }
-        if (cardsRef.current.length) {
-          gsap.from(cardsRef.current, {
+
+        if (cardsRef.current && cardsRef.current.length > 0) {
+          gsap?.from?.(cardsRef.current, {
             y: 18,
             opacity: 0,
             duration: 0.7,
@@ -88,8 +144,9 @@ export default function ServicesPage() {
               : undefined,
           });
         }
+
         if (ctaRef.current) {
-          gsap.from(ctaRef.current, {
+          gsap?.from?.(ctaRef.current, {
             scale: 0.985,
             opacity: 0,
             duration: 0.6,
@@ -105,18 +162,29 @@ export default function ServicesPage() {
 
     return () => {
       cIC(idleId);
-      if (ctx) ctx.revert();
-      if (ScrollTrigger) {
+      if (ctx) {
         try {
-          ScrollTrigger.kill();
-        } catch (e) {}
+          ctx.revert();
+        } catch {
+          /* ignore cleanup errors */
+        }
+      }
+
+      // If ScrollTrigger exposes a kill method, attempt to call it
+      try {
+        const st: unknown = ScrollTrigger;
+
+        if (st && typeof (st as any).kill === "function") (st as any).kill();
+      } catch {
+        /* ignore */
       }
     };
+    // empty deps so animation runs once on mount
   }, []);
 
   return (
     <>
-    <SmoothScroll/>
+      <SmoothScroll />
       <Navbar />
       <div className="min-h-screen relative bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black">
         <ServicesBackground />

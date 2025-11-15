@@ -8,6 +8,9 @@ export default function ServicesExtras() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    const node = sectionRef.current;
+    if (!node) return;
+
     const prefersReduced =
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -30,17 +33,22 @@ export default function ServicesExtras() {
         clearTimeout(id);
       };
 
-    const idleId = rIC(async () => {
+    // Keep references we will need to clean up
+    let idleId: any = null;
+    let io: IntersectionObserver | null = null;
+    const gsapContexts: Array<{ revert: () => void }> = [];
+    const detailHandlers: Array<{ el: HTMLDetailsElement; handler: EventListener }> =
+      [];
+
+    idleId = rIC(async () => {
       const gsapModule = await import("gsap");
       const gsap = gsapModule.gsap || gsapModule.default || gsapModule;
 
       // entrance timeline when section enters viewport
-      const els = sectionRef.current
-        ? sectionRef.current.querySelectorAll(".services-animate")
-        : [];
+      const els = node.querySelectorAll(".services-animate") || [];
 
       // simple intersection trigger
-      const io = new IntersectionObserver(
+      io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
@@ -81,41 +89,41 @@ export default function ServicesExtras() {
                 { y: 10, opacity: 0 },
                 { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, delay: 0.12 }
               );
-            }, sectionRef);
+            }, node);
 
-            // once animated, disconnect observer and let GSAP manage cleanup
-            io.disconnect();
-            // keep ctx? we don't need to revert here because this is entrance only
+            // store context for cleanup later
+            if (ctx && typeof ctx.revert === "function") {
+              gsapContexts.push(ctx);
+            }
+
+            // once animated, disconnect observer
+            if (io) {
+              io.disconnect();
+            }
           });
         },
         { threshold: 0.12 }
       );
 
-      if (sectionRef.current && els.length) {
-        io.observe(sectionRef.current);
+      if (node && els.length) {
+        io.observe(node);
       }
 
       // details open/close animations
-      const details = sectionRef.current
-        ? sectionRef.current.querySelectorAll("details")
-        : [];
-
-      const detailToggles: Array<{ el: HTMLElement; anim?: any }> = [];
+      const details = (node.querySelectorAll("details") || []) as NodeListOf<
+        HTMLDetailsElement
+      >;
 
       details.forEach((d) => {
-        const content = d.querySelector("p");
+        const content = d.querySelector("p") as HTMLElement | null;
         if (!content) return;
         // ensure content is ready for animated height
-        (content as HTMLElement).style.overflow = "hidden";
-        (content as HTMLElement).style.height = (d as HTMLDetailsElement).open
-          ? "auto"
-          : "0px";
-        (content as HTMLElement).style.opacity = (d as HTMLDetailsElement).open
-          ? "1"
-          : "0";
+        content.style.overflow = "hidden";
+        content.style.height = d.open ? "auto" : "0px";
+        content.style.opacity = d.open ? "1" : "0";
 
         const onToggle = () => {
-          const open = (d as HTMLDetailsElement).open;
+          const open = d.open;
           try {
             if (open) {
               gsap.fromTo(
@@ -136,32 +144,40 @@ export default function ServicesExtras() {
                 ease: "power2.in",
               });
             }
-          } catch (e) {
+          } catch (_e) {
             // guard in case GSAP unloads; ignore
           }
         };
 
         d.addEventListener("toggle", onToggle);
-        detailToggles.push({ el: d as HTMLElement });
+        detailHandlers.push({ el: d, handler: onToggle });
       });
-
-      // cleanup when component unmounts
-      const cleanup = () => {
-        details.forEach((d) => d.removeEventListener("toggle", () => {}));
-        try {
-          io.disconnect();
-        } catch (e) {}
-      };
-
-      // attach cleanup to window so we can call it from return below
-      (sectionRef.current as any).__servicesExtrasCleanup = cleanup;
     });
 
+    // cleanup when component unmounts
     return () => {
       cIC(idleId);
-      // run cleanup if set
-      const c = (sectionRef.current as any)?.__servicesExtrasCleanup;
-      if (typeof c === "function") c();
+
+      // remove detail toggle handlers
+      detailHandlers.forEach(({ el, handler }) => {
+        el.removeEventListener("toggle", handler);
+      });
+
+      // disconnect observer
+      try {
+        if (io) io.disconnect();
+      } catch (_e) {
+        // ignore
+      }
+
+      // revert gsap contexts
+      gsapContexts.forEach((ctx) => {
+        try {
+          if (typeof ctx.revert === "function") ctx.revert();
+        } catch (_e) {
+          // ignore
+        }
+      });
     };
   }, []);
 

@@ -6,7 +6,7 @@ import { useScripts } from "./useScripts";
 import TimelineItem from "./TimelineItem";
 
 const TimelineSection: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const scriptsLoaded = useScripts([
     "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js",
@@ -15,82 +15,99 @@ const TimelineSection: React.FC = () => {
   useEffect(() => {
     if (!scriptsLoaded || !sectionRef.current) return;
 
-    const gsap = (window as any).gsap;
-    const ScrollTrigger = (window as any).ScrollTrigger;
-    if (!gsap || !ScrollTrigger) return;
+    // Narrow window.gsap / window.ScrollTrigger safely from unknown to a small usable shape
+    const gsapUnknown = (window as any).gsap;
+    const scrollTriggerUnknown = (window as any).ScrollTrigger;
 
-    gsap.registerPlugin(ScrollTrigger);
+    if (!gsapUnknown || !scrollTriggerUnknown) return;
+
+    // Define a minimal typed shape we need from GSAP to avoid using `any`.
+    type GsapUtils = {
+      toArray: (selector: unknown) => unknown[];
+    };
+    type GsapContextResult = { revert: () => void };
+    type GsapShape = {
+      registerPlugin: (...plugins: unknown[]) => void;
+      from: (target: unknown, vars: unknown) => unknown;
+      to: (target: unknown, vars: unknown) => unknown;
+      set: (target: unknown, vars: unknown) => void;
+      context: (fn: () => void, scope?: unknown) => GsapContextResult;
+      utils: GsapUtils;
+    };
+
+    // Narrowed, typed gsap and ScrollTrigger
+    const gsap = gsapUnknown as unknown as GsapShape;
+    const ScrollTrigger = scrollTriggerUnknown as unknown;
+
+    // Now we can use gsap safely
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+    } catch {
+      // If registerPlugin fails for any reason, bail out gracefully.
+      return;
+    }
 
     const pinSection = sectionRef.current;
+    if (!pinSection) return;
+
     const progressLine = pinSection.querySelector(".timeline-line-progress");
 
-    const ctx = gsap.context(() => {
-      gsap.from(".timeline-heading", {
-        y: -50,
-        opacity: 0,
-        duration: 1,
-        ease: "expo.out",
-        scrollTrigger: {
-          trigger: pinSection,
-          start: "top 80%",
-        },
-      });
-
-      gsap.to(progressLine, {
-        height: "100%",
-        ease: "none",
-        scrollTrigger: {
-          trigger: pinSection,
-          start: "top bottom",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      });
-
-      const timelineItems = gsap.utils.toArray(
-        ".timeline-item"
-      ) as HTMLElement[];
-      timelineItems.forEach((item) => {
-        const itemContent = item.querySelector(".timeline-content");
-        const itemIcon = item.querySelector(".timeline-icon");
-        const itemImage = item.querySelector("img");
-
-        gsap.set([itemContent, itemIcon, itemImage], {
-          autoAlpha: 0,
-          y: 50,
-          scale: 0.8,
-        });
-
-        gsap.to(itemContent, {
-          autoAlpha: 1,
-          y: 0,
+    const ctx = gsap.context(
+      () => {
+        // heading animation
+        gsap.from?.(".timeline-heading", {
+          y: -50,
+          opacity: 0,
           duration: 1,
           ease: "expo.out",
           scrollTrigger: {
-            trigger: item,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
-          },
-        });
-
-        gsap.to(itemIcon, {
-          scale: 1,
-          autoAlpha: 1,
-          duration: 0.8,
-          ease: "back.out(1.7)",
-          scrollTrigger: {
-            trigger: item,
+            trigger: pinSection,
             start: "top 80%",
-            toggleActions: "play none none reverse",
           },
         });
 
-        if (itemImage) {
-          gsap.to(itemImage, {
-            scale: 1,
+        // progress line animation
+        gsap.to?.(progressLine, {
+          height: "100%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: pinSection,
+            start: "top bottom",
+            end: "bottom bottom",
+            scrub: true,
+          },
+        });
+
+        // timeline items animation
+        const rawItems = gsap.utils.toArray(".timeline-item");
+        (rawItems as unknown[]).forEach((r) => {
+          const item = r as HTMLElement;
+          const itemContent = item.querySelector(".timeline-content");
+          const itemIcon = item.querySelector(".timeline-icon");
+          const itemImage = item.querySelector("img");
+
+          gsap.set?.([itemContent, itemIcon, itemImage], {
+            autoAlpha: 0,
+            y: 50,
+            scale: 0.8,
+          });
+
+          gsap.to?.(itemContent, {
             autoAlpha: 1,
             y: 0,
             duration: 1,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: item,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          gsap.to?.(itemIcon, {
+            scale: 1,
+            autoAlpha: 1,
+            duration: 0.8,
             ease: "back.out(1.7)",
             scrollTrigger: {
               trigger: item,
@@ -98,12 +115,36 @@ const TimelineSection: React.FC = () => {
               toggleActions: "play none none reverse",
             },
           });
-        }
-      });
-    }, sectionRef);
 
-    return () => ctx.revert();
-  }, [scriptsLoaded]);
+          if (itemImage) {
+            gsap.to?.(itemImage, {
+              scale: 1,
+              autoAlpha: 1,
+              y: 0,
+              duration: 1,
+              ease: "back.out(1.7)",
+              scrollTrigger: {
+                trigger: item,
+                start: "top 80%",
+                toggleActions: "play none none reverse",
+              },
+            });
+          }
+        });
+      },
+      sectionRef // scoping
+    );
+
+    // cleanup: revert context (this uses the captured ctx)
+    return () => {
+      try {
+        ctx.revert();
+      } catch {
+        /* ignore cleanup errors */
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scriptsLoaded]); // sectionRef is stable & used only via captured value
 
   return (
     <section

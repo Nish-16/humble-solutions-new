@@ -24,6 +24,7 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       });
     } catch (err) {
       // If Lenis isn't installed or fails, don't break the app
+      // keep the warning so we have visibility in dev
       // eslint-disable-next-line no-console
       console.warn("Lenis init failed:", err);
       return;
@@ -38,11 +39,10 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     // Intercept internal anchor clicks and use Lenis for smooth scrolling
     const onClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+      const target = e.target as HTMLElement | null;
       if (!target) return;
       const anchor =
-        target.closest &&
-        (target.closest('a[href^="#"]') as HTMLAnchorElement | null);
+        target.closest && (target.closest('a[href^="#"]') as HTMLAnchorElement | null);
       if (!anchor) return;
       const href = anchor.getAttribute("href");
       if (!href || href === "#") return;
@@ -52,15 +52,15 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       e.preventDefault();
       try {
         const scroller = document.scrollingElement || document.documentElement;
-        const current = scroller.scrollTop || window.scrollY || 0;
+        const current = (scroller && (scroller as Element & { scrollTop?: number }).scrollTop) || window.scrollY || 0;
         const targetY = el.getBoundingClientRect().top + current;
         if (lenis && typeof lenis.scrollTo === "function") {
           lenis.scrollTo(targetY);
         } else {
           window.scrollTo({ top: targetY, behavior: "smooth" });
         }
-      } catch (err) {
-        // fallback: do nothing special
+      } catch (_err) {
+        // fallback: ignore errors during scroll-to calculation
       }
     };
     document.addEventListener("click", onClick);
@@ -78,7 +78,8 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
               lenis.scrollTo(value);
             }
             // return current position
-            return lenis.scroll || scroller.scrollTop;
+            // prefer lenis's reported value if present
+            return (lenis && (lenis.scroll || scroller.scrollTop)) || 0;
           },
           getBoundingClientRect() {
             return {
@@ -94,15 +95,21 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         lenis.on("scroll", () => {
           try {
             ScrollTrigger.update();
-          } catch (e) {
-            // ignore
+          } catch (_e) {
+            // ignore update errors
           }
         });
 
         // Force a refresh so ScrollTrigger measures with the new proxy
-        requestAnimationFrame(() => ScrollTrigger.refresh());
+        requestAnimationFrame(() => {
+          try {
+            ScrollTrigger.refresh();
+          } catch (_e) {
+            // ignore
+          }
+        });
       }
-    } catch (e) {
+    } catch (_e) {
       // ignore integration errors
     }
 
@@ -111,7 +118,7 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       document.removeEventListener("click", onClick);
       try {
         if (lenis && typeof lenis.destroy === "function") lenis.destroy();
-      } catch (e) {
+      } catch (_e) {
         // ignore
       }
     };

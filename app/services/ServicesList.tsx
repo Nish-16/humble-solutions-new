@@ -28,7 +28,10 @@ export default function ServicesList({
   ctaRef,
   cta,
 }: Props) {
-  const localRefs = cardsRef ?? useRef<Array<HTMLDivElement | null>>([]);
+  // Always call the hook so hooks order is stable
+  const defaultRefs = useRef<Array<HTMLDivElement | null>>([]);
+  // Use provided cardsRef if available, otherwise fall back to defaultRefs
+  const localRefs = cardsRef ?? defaultRefs;
 
   const setRef = (el: HTMLDivElement | null, i: number) => {
     localRefs.current[i] = el;

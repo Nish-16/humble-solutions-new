@@ -124,6 +124,6 @@ function ClientEarthRender() {
   }, []);
 
   return showEarth ? (
-    <Earth size="h-[100vh]" textureUrl="/textures/earth.jpg" />
+    <Earth size="h-[100vh]" lottieData="/animations/earth.json" />
   ) : null;
 }

@@ -74,18 +74,7 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <a
-              className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 text-black font-semibold shadow-lg hover:brightness-95 transition"
-              href="/services"
-            >
-              Our Services
-            </a>
-            <a
-              className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-white/10 text-white/90 hover:bg-white/5 transition"
-              href="#about"
-            >
-              Learn More
-            </a>
+            
           </div>
         </motion.div>
 
