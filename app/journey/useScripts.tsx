@@ -10,13 +10,11 @@ export const useScripts = (urls: string[]): boolean => {
     const loadScripts = async () => {
       const promises = urls.map((url) => {
         return new Promise((resolve, reject) => {
-          if (document.querySelector(`script[src="${url}"]`))
-            return resolve(true);
+          if (document.querySelector(`script[src="${url}"]`)) return resolve(true);
           const script = document.createElement("script");
           script.src = url;
           script.onload = () => resolve(true);
-          script.onerror = () =>
-            reject(new Error(`Script load error for ${url}`));
+          script.onerror = () => reject(new Error(`Script load error for ${url}`));
           document.body.appendChild(script);
         });
       });
@@ -24,7 +22,6 @@ export const useScripts = (urls: string[]): boolean => {
         await Promise.all(promises);
         setLoaded(true);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error("Failed to load scripts:", error);
       }
     };

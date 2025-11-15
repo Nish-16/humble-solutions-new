@@ -1,3 +1,4 @@
+import React from "react";
 import Lottie from "lottie-react";
 import design from "../../public/services/design.json"; // adjust path based on your project
 
@@ -7,9 +8,6 @@ export type ServiceItem = {
   desc: string;
   icon: React.ReactNode;
 };
-
-// Note: React types aren't imported here because the file is used as a plain data module.
-// We still keep the shape consistent with component props.
 
 export const hero = {
   title: "Modern engineering. Impactful results.",
@@ -32,13 +30,13 @@ export const services = [
     title: "Custom Software",
     desc: "Tailored web, mobile, and cloud solutions built to your needs.",
     icon: (
-      <img 
-      src="/Web.gif" 
-      alt="AI Icon" 
-      width={150} 
-      height={50}
-      style={{ objectFit: "contain" }}
-    />
+      <img
+        src="/Web.gif"
+        alt="AI Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
+      />
     ),
   },
   {
@@ -46,13 +44,13 @@ export const services = [
     title: "AI & Automation",
     desc: "Automate workflows and gain insights with modern ML solutions.",
     icon: (
-      <img 
-      src="/AI.gif" 
-      alt="AI Icon" 
-      width={150} 
-      height={50}
-      style={{ objectFit: "contain" }}
-    />
+      <img
+        src="/AI.gif"
+        alt="AI Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
+      />
     ),
   },
   {
@@ -60,13 +58,13 @@ export const services = [
     title: "Consulting",
     desc: "Strategy, architecture, and go-to-market guidance for tech teams.",
     icon: (
-      <img 
-      src="/Consulting.gif" 
-      alt="Consulting Icon" 
-      width={150} 
-      height={50}
-      style={{ objectFit: "contain" }}
-    />
+      <img
+        src="/Consulting.gif"
+        alt="Consulting Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
+      />
     ),
   },
   {
@@ -75,10 +73,10 @@ export const services = [
     desc: "Human-centered interfaces and product design that convert.",
     icon: (
       <Lottie
-            animationData={design}
-            loop={true}
-            className="w-48 h-30 sm:w-56 sm:h-56 md:w-20 md:h-20"
-            />
+        animationData={design}
+        loop={true}
+        className="w-48 h-30 sm:w-56 sm:h-56 md:w-20 md:h-20"
+      />
     ),
   },
   {
@@ -86,13 +84,13 @@ export const services = [
     title: "Cloud & DevOps",
     desc: "Reliable infrastructure, CI/CD, and cost-optimized deployments.",
     icon: (
-      <img 
-      src="/Cloud.gif" 
-      alt="Cloud Icon" 
-      width={150} 
-      height={50}
-      style={{ objectFit: "contain" }}
-    />
+      <img
+        src="/Cloud.gif"
+        alt="Cloud Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
+      />
     ),
   },
   {
@@ -100,15 +98,17 @@ export const services = [
     title: "Support & Maintenance",
     desc: "Ongoing support to keep your systems healthy and secure.",
     icon: (
-      <img 
-      src="/Support.gif" 
-      alt="Support Icon" 
-      width={150} 
-      height={50}
-      style={{ objectFit: "contain" }}
-    />
+      <img
+        src="/Support.gif"
+        alt="Support Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
+      />
     ),
   },
 ];
 
-export default { hero, cta, services };
+const content = { hero, cta, services };
+
+export default content;

@@ -2,11 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 
 export default function Hero() {
-  const onContactClick = () => {
-    const el = document.getElementById("contact");
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
     <section className="relative isolate">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -19,7 +14,9 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
           className="text-balance text-4xl font-semibold leading-tight tracking-tight md:text-6xl "
         >
-          <p className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-slate-100 to-teal-300">We craft clean, modern digital products</p>
+          <p className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-slate-100 to-teal-300">
+            We craft clean, modern digital products
+          </p>
         </motion.h1>
         <p className="mt-5 max-w-2xl text-pretty text-neutral-600 md:text-lg">
           Websites, mobile apps, and IoT systems built with attention to detail

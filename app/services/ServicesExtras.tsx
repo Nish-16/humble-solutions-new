@@ -20,7 +20,7 @@ export default function ServicesExtras() {
       connection &&
       (connection.saveData || /2g/.test(connection.effectiveType || ""));
 
-    if (prefersReduced || saveData) return; // avoid animations for reduced-motion / save-data
+    if (prefersReduced || saveData) return;
 
     const rIC =
       (window as any).requestIdleCallback ||
@@ -33,7 +33,6 @@ export default function ServicesExtras() {
         clearTimeout(id);
       };
 
-    // Keep references we will need to clean up
     let idleId: any = null;
     let io: IntersectionObserver | null = null;
     const gsapContexts: Array<{ revert: () => void }> = [];
@@ -44,10 +43,8 @@ export default function ServicesExtras() {
       const gsapModule = await import("gsap");
       const gsap = gsapModule.gsap || gsapModule.default || gsapModule;
 
-      // entrance timeline when section enters viewport
       const els = node.querySelectorAll(".services-animate") || [];
 
-      // simple intersection trigger
       io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -91,12 +88,10 @@ export default function ServicesExtras() {
               );
             }, node);
 
-            // store context for cleanup later
             if (ctx && typeof ctx.revert === "function") {
               gsapContexts.push(ctx);
             }
 
-            // once animated, disconnect observer
             if (io) {
               io.disconnect();
             }
@@ -109,7 +104,6 @@ export default function ServicesExtras() {
         io.observe(node);
       }
 
-      // details open/close animations
       const details = (node.querySelectorAll("details") || []) as NodeListOf<
         HTMLDetailsElement
       >;
@@ -117,7 +111,6 @@ export default function ServicesExtras() {
       details.forEach((d) => {
         const content = d.querySelector("p") as HTMLElement | null;
         if (!content) return;
-        // ensure content is ready for animated height
         content.style.overflow = "hidden";
         content.style.height = d.open ? "auto" : "0px";
         content.style.opacity = d.open ? "1" : "0";
@@ -144,7 +137,7 @@ export default function ServicesExtras() {
                 ease: "power2.in",
               });
             }
-          } catch (_e) {
+          } catch {
             // guard in case GSAP unloads; ignore
           }
         };
@@ -154,27 +147,23 @@ export default function ServicesExtras() {
       });
     });
 
-    // cleanup when component unmounts
     return () => {
       cIC(idleId);
 
-      // remove detail toggle handlers
       detailHandlers.forEach(({ el, handler }) => {
         el.removeEventListener("toggle", handler);
       });
 
-      // disconnect observer
       try {
         if (io) io.disconnect();
-      } catch (_e) {
+      } catch {
         // ignore
       }
 
-      // revert gsap contexts
       gsapContexts.forEach((ctx) => {
         try {
           if (typeof ctx.revert === "function") ctx.revert();
-        } catch (_e) {
+        } catch {
           // ignore
         }
       });
@@ -186,6 +175,7 @@ export default function ServicesExtras() {
       ref={sectionRef}
       className="services-extras mt-20 max-w-7xl mx-auto px-6"
     >
+      {/* ... UI unchanged ... */}
       <div className="bg-white/3 rounded-2xl p-8 sm:p-10 backdrop-blur-sm border border-white/6 shadow-lg">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="services-animate col-left">

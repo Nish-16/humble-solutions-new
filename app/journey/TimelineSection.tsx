@@ -143,7 +143,6 @@ const TimelineSection: React.FC = () => {
         /* ignore cleanup errors */
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scriptsLoaded]); // sectionRef is stable & used only via captured value
 
   return (

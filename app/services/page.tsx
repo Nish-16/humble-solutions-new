@@ -19,7 +19,6 @@ const ServicesBackground = dynamic(() => import("./ServicesBackground"), {
 
 const { hero, services, cta } = content;
 
-type MaybeHTMLElement = HTMLElement | null;
 type MaybeDivArray = Array<HTMLDivElement | null>;
 
 // Minimal shape for the small subset of GSAP we use
@@ -78,26 +77,20 @@ export default function ServicesPage() {
       ).cancelIdleCallback;
 
       if (raw) {
-        // `cancelIdleCallback` implementations expect a `number | undefined`.
-        // Convert `null` to `undefined` when calling the native API.
         raw(id === null ? undefined : (id as number | undefined));
         return;
       }
 
-      // Fallback for environments without `cancelIdleCallback`.
       if (typeof id === "number") clearTimeout(id);
     };
 
     idleId = rIC(async () => {
-      // dynamic import of gsap
       const gsapMod = await import("gsap");
-      // some bundlers expose gsap as default, others as named export; normalize
       gsap = (gsapMod as unknown as { default?: unknown }).default
         ? (gsapMod as unknown as { default?: GsapShape }).default!
         : (gsapMod as unknown as unknown as GsapShape);
 
       try {
-        // ScrollTrigger may be in a separate module path
         const mod = await import("gsap/dist/ScrollTrigger");
         ScrollTrigger =
           (mod as unknown as { ScrollTrigger?: unknown }).ScrollTrigger ??
@@ -105,7 +98,6 @@ export default function ServicesPage() {
           null;
 
         if (gsap && ScrollTrigger) {
-          // register plugin if available
           try {
             gsap.registerPlugin?.(ScrollTrigger);
           } catch {
@@ -118,7 +110,6 @@ export default function ServicesPage() {
 
       if (!gsap) return;
 
-      // create GSAP context and animations
       ctx = gsap.context(() => {
         if (heroRef.current) {
           gsap?.from?.(heroRef.current, {
@@ -170,16 +161,13 @@ export default function ServicesPage() {
         }
       }
 
-      // If ScrollTrigger exposes a kill method, attempt to call it
       try {
         const st: unknown = ScrollTrigger;
-
         if (st && typeof (st as any).kill === "function") (st as any).kill();
       } catch {
         /* ignore */
       }
     };
-    // empty deps so animation runs once on mount
   }, []);
 
   return (
@@ -190,18 +178,9 @@ export default function ServicesPage() {
         <ServicesBackground />
 
         <main className="relative z-10 max-w-7xl mx-auto py-20 px-6">
-          <ServicesHero
-            ref={heroRef}
-            title={hero.title}
-            subtitle={hero.subtitle}
-          />
+          <ServicesHero ref={heroRef} title={hero.title} subtitle={hero.subtitle} />
 
-          <ServicesList
-            services={services}
-            cardsRef={cardsRef}
-            ctaRef={ctaRef}
-            cta={cta}
-          />
+          <ServicesList services={services} cardsRef={cardsRef} ctaRef={ctaRef} cta={cta} />
 
           <ServicesExtras />
         </main>

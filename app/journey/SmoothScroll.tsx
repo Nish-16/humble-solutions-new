@@ -5,11 +5,6 @@ import Lenis from "@studio-freight/lenis";
 
 /**
  * SmoothScroll wrapper using Lenis.
- * - Initializes Lenis on mount and starts the RAF loop
- * - Integrates with GSAP ScrollTrigger if available
- *
- * Notes:
- * - Install Lenis with: `npm i @studio-freight/lenis` or `yarn add @studio-freight/lenis`
  */
 const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   useEffect(() => {
@@ -25,7 +20,6 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     } catch (err) {
       // If Lenis isn't installed or fails, don't break the app
       // keep the warning so we have visibility in dev
-      // eslint-disable-next-line no-console
       console.warn("Lenis init failed:", err);
       return;
     }
@@ -37,7 +31,6 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     rafId = requestAnimationFrame(raf);
 
-    // Intercept internal anchor clicks and use Lenis for smooth scrolling
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
@@ -59,7 +52,7 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         } else {
           window.scrollTo({ top: targetY, behavior: "smooth" });
         }
-      } catch (_err) {
+      } catch {
         // fallback: ignore errors during scroll-to calculation
       }
     };
@@ -77,8 +70,6 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
             if (arguments.length) {
               lenis.scrollTo(value);
             }
-            // return current position
-            // prefer lenis's reported value if present
             return (lenis && (lenis.scroll || scroller.scrollTop)) || 0;
           },
           getBoundingClientRect() {
@@ -91,25 +82,23 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
           },
         });
 
-        // Update ScrollTrigger on Lenis scroll events
         lenis.on("scroll", () => {
           try {
             ScrollTrigger.update();
-          } catch (_e) {
+          } catch {
             // ignore update errors
           }
         });
 
-        // Force a refresh so ScrollTrigger measures with the new proxy
         requestAnimationFrame(() => {
           try {
             ScrollTrigger.refresh();
-          } catch (_e) {
+          } catch {
             // ignore
           }
         });
       }
-    } catch (_e) {
+    } catch {
       // ignore integration errors
     }
 
@@ -118,7 +107,7 @@ const SmoothScroll: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       document.removeEventListener("click", onClick);
       try {
         if (lenis && typeof lenis.destroy === "function") lenis.destroy();
-      } catch (_e) {
+      } catch {
         // ignore
       }
     };
