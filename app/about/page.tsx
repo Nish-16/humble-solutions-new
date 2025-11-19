@@ -12,7 +12,7 @@ export default function About() {
       <GalaxyBackground />
       <SmoothScroll>
         <Navbar />
-        <main className="relative z-10 max-w-6xl mx-auto px-6 py-20">
+        <main className="relative z-10 max-w-6xl mx-auto px-2 py-20">
           <Hero />
           <div className="mt-12 rounded-full">
             <AboutSection />

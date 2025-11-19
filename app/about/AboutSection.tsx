@@ -46,7 +46,7 @@ export default function AboutSection() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }} // 👈 triggers when 30% of section is visible
-      className="mt-15 relative bg-black/10 rounded-3xl p-8 sm:p-12 overflow-hidden"
+      className="mt-15 relative bg-black/10 rounded-3xl p-3 sm:p-12 overflow-hidden"
     >
       {/* Decorative glow */}
       <div className="pointer-events-none absolute -inset-8 blur-3xl opacity-10 bg-gradient-to-br from-cyan-400 to-blue-500" />

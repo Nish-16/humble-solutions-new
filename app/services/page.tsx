@@ -177,7 +177,7 @@ export default function ServicesPage() {
       <div className="min-h-screen relative bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black">
         <ServicesBackground />
 
-        <main className="relative z-10 max-w-7xl mx-auto py-20 px-6">
+        <main className="relative z-10 max-w-7xl mx-auto py-20 px-4">
           <ServicesHero ref={heroRef} title={hero.title} subtitle={hero.subtitle} />
 
           <ServicesList services={services} cardsRef={cardsRef} ctaRef={ctaRef} cta={cta} />

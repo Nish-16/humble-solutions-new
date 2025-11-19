@@ -1,6 +1,4 @@
 import React from "react";
-import Lottie from "lottie-react";
-import design from "../../public/services/design.json"; // adjust path based on your project
 
 export type ServiceItem = {
   id: string;
@@ -72,10 +70,12 @@ export const services = [
     title: "Design & UX",
     desc: "Human-centered interfaces and product design that convert.",
     icon: (
-      <Lottie
-        animationData={design}
-        loop={true}
-        className="w-48 h-30 sm:w-56 sm:h-56 md:w-20 md:h-20"
+      <img
+        src="/design.gif"
+        alt="Design Icon"
+        width={150}
+        height={50}
+        style={{ objectFit: "contain" }}
       />
     ),
   },

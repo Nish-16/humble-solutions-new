@@ -173,10 +173,10 @@ export default function ServicesExtras() {
   return (
     <section
       ref={sectionRef}
-      className="services-extras mt-20 max-w-7xl mx-auto px-6"
+      className="services-extras mt-20 max-w-7xl mx-auto px-1"
     >
       {/* ... UI unchanged ... */}
-      <div className="bg-white/3 rounded-2xl p-8 sm:p-10 backdrop-blur-sm border border-white/6 shadow-lg">
+      <div className="bg-white/3 rounded-2xl p-4 sm:p-10 backdrop-blur-sm border border-white/6 shadow-lg">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="services-animate col-left">
             <h3 className="services-animate heading text-2xl font-semibold text-white">

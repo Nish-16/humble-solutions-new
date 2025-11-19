@@ -43,7 +43,7 @@ export default function Hero() {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="mt-20 relative bg-black/30 backdrop-blur-lg border border-cyan-400/8 rounded-3xl p-8 sm:p-12 shadow-2xl flex flex-col items-center justify-center min-h-[24rem]"
+      className="mt-10 relative bg-black/30 backdrop-blur-lg border border-cyan-400/8 rounded-3xl p-3 sm:p-12 shadow-2xl flex flex-col items-center justify-center min-h-[24rem] text-justify"
     >
       {/* Decorative accent */}
       <div className="pointer-events-none absolute -inset-6 rounded-3xl blur-3xl opacity-10 bg-gradient-to-br from-cyan-400 to-blue-500" />
@@ -51,7 +51,7 @@ export default function Hero() {
       {/* Heading */}
       <motion.h1
         variants={textVariants}
-        className="text-center text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-10"
+        className="text-center text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-10 "
       >
         Humble Solutions
       </motion.h1>
@@ -61,7 +61,7 @@ export default function Hero() {
         
         {/* Text Section */}
         <motion.div variants={textVariants} className="flex-1 text-center lg:text-left">
-          <p className="text-base sm:text-lg text-white/80 max-w-3xl mx-auto lg:mx-0">
+          <p className="text-base sm:text-lg text-white/80 max-w-3xl mx-auto lg:mx-0 ">
             We build elegant, reliable software and cloud systems that help
             teams move faster. Design-forward, pragmatic, and focused on
             measurable outcomes.
