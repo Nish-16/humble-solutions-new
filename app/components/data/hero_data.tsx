@@ -1,47 +1,44 @@
-// src/components/data/hero_data.tsx
+import { Globe, Smartphone, Palette, Cpu } from "lucide-react";
 
-export interface infoBoxes {
-  id: string;
+export type EarthBox = {
+  id: number;
   title: string;
   description: string;
   position: string;
-}
+  icon: any;
+};
 
-export const infoBoxes: infoBoxes[] = [
+export const earthBoxes: EarthBox[] = [
   {
-    id: "box-1",
-    title: "Our Mission",
-    description: "To deliver innovative and humble solutions globally.",
-    position: "top-16 left-16",
+    id: 1,
+    title: "Web Development",
+    description:
+      "High-performance websites, dashboards, landing pages, and custom platforms built with modern frameworks.",
+    position: "left-[6%] top-[14%]",
+    icon: Globe,
   },
   {
-    id: "box-2",
-    title: "Our Team",
-    description: "A passionate group of developers and designers.",
-    position: "top-1/2 left-16 -translate-y-1/2",
+    id: 2,
+    title: "Mobile Development",
+    description:
+      "Cross-platform mobile apps with great UI, fast performance, and smooth user experiences.",
+    position: "left-[6%] bottom-[14%]",
+    icon: Smartphone,
   },
   {
-    id: "box-3",
-    title: "Core Services",
-    description: "Web development, UI/UX design, and cloud integration.",
-    position: "bottom-16 left-16",
+    id: 3,
+    title: "UI/UX Design",
+    description:
+      "Human-centered design, wireframing, prototyping, and complete product design systems.",
+    position: "right-[6%] top-[14%]",
+    icon: Palette,
   },
   {
-    id: "box-4",
-    title: "Our Portfolio",
-    description: "Explore our diverse range of successful projects.",
-    position: "top-16 right-16",
-  },
-  {
-    id: "box-5",
-    title: "Testimonials",
-    description: "What our valued clients have to say about us.",
-    position: "top-1/2 right-16 -translate-y-1/2",
-  },
-  {
-    id: "box-6",
-    title: "Contact Us",
-    description: "Let's build something amazing together.",
-    position: "bottom-16 right-16",
+    id: 4,
+    title: "Software & Hardware Solutions",
+    description:
+      "Integrated digital + physical solutions including IoT systems, embedded hardware, and custom software.",
+    position: "right-[6%] bottom-[14%]",
+    icon: Cpu,
   },
 ];

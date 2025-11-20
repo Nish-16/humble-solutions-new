@@ -41,6 +41,26 @@ export default function GooeyNav({
     setActiveIndex(idx < 0 ? 0 : idx);
   }, [pathname, items]);
 
+    const resetToActive = () => {
+    if (!navRef.current || !containerRef.current || !filterRef.current || !textRef.current) return;
+
+    // Move the effect back to the route-active item
+    const activeLi = navRef.current.querySelectorAll("li")[activeIndex] as HTMLElement | undefined;
+    if (activeLi) updateEffectPosition(activeLi);
+
+    // Clear any existing particles & stop the filter "active" pill animation
+    const particles = filterRef.current.querySelectorAll(".particle");
+    particles.forEach((p) => p.remove());
+    filterRef.current.classList.remove("active");
+
+    // Ensure text effect reflects the route-active state (keeps the label shown)
+    textRef.current.classList.remove("active");
+    // re-add to ensure consistent final state (will not re-run the entrance animation unless desired)
+    void textRef.current.offsetWidth;
+    textRef.current.classList.add("active");
+  };
+
+
   const noise = (n = 1) => n / 2 - Math.random() * n;
   const getXY = (
     distance: number,
@@ -254,7 +274,11 @@ export default function GooeyNav({
         `}
       </style>
 
-      <div className="relative" ref={containerRef}>
+      <div
+        className="relative"
+        ref={containerRef}
+        onPointerLeave={resetToActive} // <-- resets when pointer leaves nav area
+      >
         <nav
           className="flex relative"
           style={{ transform: "translate3d(0,0,0.01px)" }}

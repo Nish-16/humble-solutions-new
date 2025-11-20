@@ -18,7 +18,7 @@ const ServicesBackground: React.FC = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
     const scene = new THREE.Scene();
-
+    scene.background = new THREE.Color("#020617");
     // Camera placed slightly farther for a more subtle, distant field
     const rect = canvas.getBoundingClientRect();
     const camera = new THREE.PerspectiveCamera(

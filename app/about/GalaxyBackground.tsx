@@ -18,6 +18,7 @@ const GalaxyBackground: React.FC = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#020617");
     const rect = canvas.getBoundingClientRect();
     const camera = new THREE.PerspectiveCamera(
       75,

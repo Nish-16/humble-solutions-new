@@ -4,122 +4,172 @@ import React, { useEffect, useRef } from "react";
 import Lottie from "lottie-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import GalaxyBackground from "./GalaxyBackground";
-import { infoBoxes } from "./data/hero_data";
 import Globe from "@/public/Home/Earth.json";
+import { earthBoxes } from "./data/hero_data";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type EarthProps = {
   size?: string;
-  lottieData: string; // <-- pass Lottie JSON here
 };
 
 export default function Earth({ size = "h-[80vh]" }: EarthProps) {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const globeWrapRef = useRef<HTMLDivElement | null>(null);
+  const boxesRef = useRef<HTMLDivElement[]>([]);
 
-  // ✅ Info Box Animations
+  const setBoxRef = (el: HTMLDivElement | null, idx: number) => {
+    if (el) boxesRef.current[idx] = el;
+  };
+
   useEffect(() => {
-  if (!sectionRef.current) return;
+    if (!sectionRef.current) return;
 
-  // Allow layout to finish
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      const boxes = sectionRef.current!.querySelectorAll<HTMLElement>(".info-box");
-      const triggers: ScrollTrigger[] = [];
+    let layoutRAF = 0;
+    let tl: gsap.core.Timeline | null = null;
+    let globeTween: gsap.core.Tween | null = null;
+    let st: ScrollTrigger | null = null;
 
-      const sectionRect = sectionRef.current!.getBoundingClientRect();
-      const centerX = sectionRect.width / 2;
-      const centerY = sectionRect.height / 2;
+    const build = () => {
+      const section = sectionRef.current!;
+      const boxes = boxesRef.current;
 
-      // ✅ GLOBE ROTATION SPEED UP ON SCROLL
-      gsap.to(".earth-lottie", {
-        rotation: 45, // degrees
+      const rect = section.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const fromVars = boxes.map((box) => {
+        const b = box.getBoundingClientRect();
+        return {
+          x: centerX - (b.left - rect.left + b.width / 2),
+          y: centerY - (b.top - rect.top + b.height / 2),
+        };
+      });
+
+      tl?.kill();
+      globeTween?.kill();
+      st?.kill();
+
+      gsap.set(boxes, {
+        x: (i) => fromVars[i].x,
+        y: (i) => fromVars[i].y,
+        opacity: 0,
+        scale: 0.65,
+      });
+
+      tl = gsap.timeline({ paused: true });
+
+      tl.to(boxes, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 1.4,
+        ease: "power3.out",
+        stagger: { each: 0.18, from: "center" },
+      });
+
+      tl.to(
+        boxes,
+        {
+          y: "+=6",
+          duration: 1.2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+          stagger: { each: 0.12, from: "center" },
+        },
+        ">+0.05"
+      );
+
+      globeTween = gsap.to(".earth-lottie", {
+        rotation: 35,
+        ease: "none",
         scrollTrigger: {
-          trigger: sectionRef.current!,
+          trigger: section,
           start: "top bottom",
           end: "bottom top",
           scrub: true,
         },
-        ease: "none",
       });
 
-      boxes.forEach((box, index) => {
-        const rect = box.getBoundingClientRect();
-
-        // ✅ Start at center → move outward
-        const startX = centerX - (rect.left - sectionRect.left + rect.width / 2);
-        const startY = centerY - (rect.top - sectionRect.top + rect.height / 2);
-
-        // ✅ Orbit offset before settling
-        const orbitX = (index % 2 === 0 ? 1 : -1) * 40;   // horizontal wobble
-        const orbitY = index * 10;                       // slight vertical offset
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: sectionRef.current!,
-            start: "top center",
-            end: "center+=100 center",
-            scrub: 1,
-          },
-        });
-
-        // ✅ Center → Orbit
-        tl.fromTo(
-          box,
-          { x: startX, y: startY, scale: 0.4, opacity: 0 },
-          { x: orbitX, y: orbitY, scale: 1, opacity: 1, ease: "power3.out" }
-        );
-
-        // ✅ Orbit → Final Position
-        tl.to(box, {
-          x: 0,
-          y: 0,
-          ease: "power2.out",
-        });
-
-        triggers.push(tl.scrollTrigger!);
+      st = ScrollTrigger.create({
+        trigger: section,
+        start: "top 80%",
+        onEnter: () => tl?.restart(),
+        onEnterBack: () => tl?.restart(),
+        onLeave: () => tl?.reverse(),
+        onLeaveBack: () => tl?.reverse(),
       });
+    };
 
-      return () => {
-        triggers.forEach((st) => st.kill());
-        gsap.killTweensOf(".info-box");
-      };
+    layoutRAF = requestAnimationFrame(() => {
+      build();
+      ScrollTrigger.refresh();
     });
-  });
-}, []);
 
+    const onResize = () => {
+      cancelAnimationFrame(layoutRAF);
+      layoutRAF = requestAnimationFrame(() => build());
+    };
+
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(layoutRAF);
+      window.removeEventListener("resize", onResize);
+      tl?.kill();
+      globeTween?.kill();
+      st?.kill();
+      gsap.killTweensOf(boxesRef.current);
+      ScrollTrigger.refresh();
+    };
+  }, []);
 
   const boxClasses =
-    "info-box absolute w-48 h-32 md:w-64 md:h-40 p-4 bg-black/20 backdrop-blur-md border border-white/20 rounded-lg shadow-lg text-white flex flex-col justify-center items-center text-center z-20";
+    "info-box absolute w-44 md:w-56 p-4 bg-gradient-to-br from-black/40 to-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl text-white text-center z-20";
 
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full ${size} flex items-center justify-center overflow-hidden`}
+      className={`relative w-full ${size} flex items-center justify-center overflow-hidden px-6`}
     >
-      {/* ⭐ Background Galaxy */}
       <GalaxyBackground />
 
-      {/* ✅ Lottie Earth */}
-      <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 pointer-events-none">
+      <div
+        ref={globeWrapRef}
+        className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+      >
         <Lottie
           animationData={Globe}
           loop
           autoplay
-          className="earth-lottie w-[150vh] h-[150vh]"
+          className="earth-lottie w-[120vmin] h-[120vmin] opacity-90"
         />
-
       </div>
 
-      {/* ✅ Info Boxes */}
-      {infoBoxes.map((box) => (
-        <div key={box.id} className={`${boxClasses} ${box.position}`}>
-          <div className="w-12 h-1 bg-[#b6e0fe] rounded-full mb-3"></div>
-          <h3 className="font-bold text-lg mb-1">{box.title}</h3>
-          <p className="text-sm text-gray-200">{box.description}</p>
-        </div>
-      ))}
+      {/* Dynamic boxes */}
+      {earthBoxes.map((box, idx) => {
+        const Icon = box.icon;
+        return (
+          <div
+            key={box.id}
+            ref={(el) => setBoxRef(el, idx)}
+            className={`${boxClasses} ${box.position}`}
+          >
+            <div className="flex items-center justify-center mb-3">
+              <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shadow-lg backdrop-blur-lg">
+                <Icon className="w-6 h-6 text-[#b6e0fe]" />
+              </div>
+            </div>
+
+            <h3 className="font-semibold text-lg mb-1">{box.title}</h3>
+            <p className="text-sm text-gray-200">{box.description}</p>
+          </div>
+        );
+      })}
     </section>
   );
 }

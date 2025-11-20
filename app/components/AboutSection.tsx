@@ -106,7 +106,7 @@ const AboutSection: React.FC = () => {
         </div>
         <div
           ref={cardRef}
-          className="relative max-w-2xl w-full text-center md:text-left bg-black/20 p-10 sm:p-12 rounded-3xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl"
+          className="relative max-w-2xl w-full text-center md:text-left bg-black/20 py-10 px-2 sm:p-12 rounded-3xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl"
         >
           <h2
             ref={titleRef}

@@ -1,149 +1,211 @@
-"use client"; // This directive is essential for components using hooks in Next.js App Router
+// TestimonialsSection.tsx
+"use client";
 
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { testimonialsData } from "./data/clients";
 
-// Register the GSAP plugin. In a real Next.js app, this might be done once in a layout file.
 gsap.registerPlugin(ScrollTrigger);
-
-// --- TypeScript Interface for our data ---
-interface Testimonial {
-  quote: string;
-  name: string;
-  title: string;
-  img: string;
-}
-
-// --- Data for the testimonials ---
-const testimonialsData: Testimonial[] = [
-  {
-    quote:
-      "Humble Solutions completely transformed our digital presence. Their innovative approach and deep technical expertise are second to none. We're seeing results we never thought possible.",
-    name: "Sarah Lynn",
-    title: "CEO of Innovate Inc.",
-    img: "https://placehold.co/100x100/4299e1/FFFFFF/png?text=SL",
-  },
-  {
-    quote:
-      "Working with their team was a dream. They are incredibly responsive, bursting with creativity, and they genuinely understood our vision and needs from day one.",
-    name: "Michael Chen",
-    title: "Founder of Creative Co.",
-    img: "https://placehold.co/100x100/38b2ac/FFFFFF/png?text=MC",
-  },
-  {
-    quote:
-      "The level of professionalism and dedication is outstanding. They delivered a robust solution on time and on budget, exceeding all our expectations.",
-    name: "David Rodriguez",
-    title: "CTO at TechForward",
-    img: "https://placehold.co/100x100/9f7aea/FFFFFF/png?text=DR",
-  },
-  {
-    quote:
-      "Their data-driven strategies provided us with crucial insights that have directly impacted our bottom line. An invaluable partner for any growing business.",
-    name: "Emily Carter",
-    title: "Marketing Director, Growth Solutions",
-    img: "https://placehold.co/100x100/ed8936/FFFFFF/png?text=EC",
-  },
-];
 
 const TestimonialsSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const leftRef = useRef<HTMLDivElement | null>(null);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // A gsap.context() lets us easily clean up our animations when the component unmounts
+    if (!sectionRef.current || !trackRef.current || !leftRef.current) return;
+
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%", // Animation starts when 70% of the section is visible
-          end: "bottom 40%",
-          toggleActions: "play none none none", // Play on enter, reverse on exit
+      ScrollTrigger.matchMedia({
+        // Desktop & tablet behavior: two-column layout with pinned horizontal scroll
+        "(min-width: 768px)": function () {
+          const sectionEl = sectionRef.current!;
+          const trackEl = trackRef.current!;
+          const leftEl = leftRef.current!;
+
+          // compute visible width available to the horizontal track:
+          // total section width minus left column width (sticky content)
+          const sectionWidth = sectionEl.offsetWidth;
+          const leftWidth = leftEl.getBoundingClientRect().width;
+          const visibleWidth = Math.max(0, sectionWidth - leftWidth);
+
+          // compute how much we need to move the track so all cards become visible
+          const distance = Math.max(0, trackEl.scrollWidth - visibleWidth);
+
+          // If there's nothing to scroll, don't pin/animate (avoids weird pin behavior)
+          if (distance <= 0) {
+            // still run heading reveal
+            const headingChars = headingRef.current
+              ? gsap.utils.toArray(headingRef.current.children)
+              : [];
+            gsap.fromTo(
+              headingChars,
+              { y: 40, opacity: 0 },
+              { y: 0, opacity: 1, stagger: 0.02, duration: 0.6, ease: "power3.out" }
+            );
+            return;
+          }
+
+          // create the main timeline (we'll pass this timeline into containerAnimation for card triggers)
+          const tl = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top top",
+              // pin for exactly the amount needed to move the track by `distance`
+              end: () => `+=${distance}`,
+              scrub: 0.8,
+              pin: true,
+              pinSpacing: true,
+              anticipatePin: 1,
+            },
+          });
+
+          // Reveal heading characters (runs at start)
+          const headingChars = headingRef.current
+            ? gsap.utils.toArray(headingRef.current.children)
+            : [];
+          tl.fromTo(
+            headingChars,
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, stagger: 0.02, duration: 0.6, ease: "power3.out" },
+            0
+          );
+
+          // Move the track left by `distance`
+          tl.to(trackEl, { x: -distance, duration: 1, ease: "none" }, 0.1);
+
+          // Per-card subtle scale effect using ScrollTrigger bound to the container animation (tl).
+          const cards = gsap.utils.toArray(trackEl.children) as HTMLElement[];
+
+          cards.forEach((card) => {
+            ScrollTrigger.create({
+              trigger: card,
+              start: "left center",
+              end: "right center",
+              containerAnimation: tl,
+              scrub: true,
+              onEnter: () => gsap.to(card, { scale: 1.03, duration: 0.3 }),
+              onLeaveBack: () => gsap.to(card, { scale: 1, duration: 0.3 }),
+            });
+          });
+
+          // Optional: keep left column sticky while pinned (we can animate it slightly if we want)
+          gsap.set(leftEl, { y: 0 });
+        },
+
+        // Mobile & small screens: stacked layout, simple heading reveal
+        "all": function () {
+          const headingChars = headingRef.current
+            ? gsap.utils.toArray(headingRef.current.children)
+            : [];
+
+          gsap.fromTo(
+            headingChars,
+            { y: 30, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.02,
+              duration: 0.6,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
         },
       });
-
-      // Animate heading characters
-      const headingChars = headingRef.current
-        ? headingRef.current.children
-        : [];
-      tl.fromTo(
-        headingChars,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.03, duration: 0.8, ease: "power3.out" }
-      );
-
-      // Animate testimonial cards with a stagger effect
-      const cards = gridRef.current ? gridRef.current.children : [];
-      tl.fromTo(
-        cards,
-        { y: 100, opacity: 0, scale: 0.9 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          stagger: 0.2,
-          duration: 1,
-          ease: "expo.out",
-        },
-        "-=1" // Start this animation 0.5s before the previous one ends
-      );
     }, sectionRef);
 
-    // Cleanup function to revert all animations within the context
-    return () => ctx.revert();
+    // refresh ScrollTrigger on resize so `end()` recomputes accurately
+    const onResize = () => {
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      // revert context and kill any ScrollTriggers created
+      ctx.revert();
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="bg-gray-900 text-white py-20 sm:py-32 overflow-hidden"
+      className="bg-gray-900 text-white py-24 sm:py-32 overflow-hidden"
+      aria-label="Testimonials horizontal scroll with left text"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <h2
-          ref={headingRef}
-          className="text-3xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-16 text-center"
-          aria-label="What Our Clients Say"
-        >
-          {"What Our Clients Say".split("").map((char, index) => (
-            <span
-              key={index}
-              className="inline-block"
-              style={{ whiteSpace: "pre" }}
-            >
-              {char}
-            </span>
-          ))}
-        </h2>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        {/* Layout: two columns on md+, stacked on small screens */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* LEFT: Sticky text block */}
+          <div
+            ref={leftRef}
+            className="relative md:pr-8"
+            // make content stick within the pinned section on desktop
+          >
+            <div className="md:sticky md:top-24">
+              <h2
+                ref={headingRef}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+                aria-label="What Our Clients Say"
+              >
+                {"What Our Clients Say".split("").map((char, index) => (
+                  <span key={index} className="inline-block" style={{ whiteSpace: "pre" }}>
+                    {char}
+                  </span>
+                ))}
+              </h2>
 
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
-        >
-          {testimonialsData.map((testimonial) => (
-            <div
-              key={testimonial.name}
-              className="bg-gray-800/50 rounded-2xl p-8 shadow-2xl border border-blue-500/10 flex flex-col items-center text-center transform hover:scale-105 hover:shadow-blue-500/20 transition-all duration-300"
-            >
-              <img
-                src={testimonial.img}
-                alt={`Avatar for ${testimonial.name}`}
-                className="w-24 h-24 rounded-full mb-6 border-4 border-blue-400 object-cover shadow-lg"
-              />
-              <p className="text-gray-300 text-lg italic mb-6 leading-relaxed flex-grow">
-                “{testimonial.quote}”
+              <p className="text-gray-300 mb-6 leading-relaxed">
+                We partner with ambitious companies to build beautiful, dependable products.
+                Here are a few words from the people we've worked with.
               </p>
-              <div className="mt-auto">
-                <span className="block text-blue-400 font-bold text-xl">
-                  {testimonial.name}
-                </span>
-                <span className="text-gray-500 text-sm">
-                  {testimonial.title}
-                </span>
-              </div>
+
+              <a
+                href="#contact"
+                className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg shadow"
+              >
+                Work with us
+              </a>
             </div>
-          ))}
+          </div>
+
+          {/* RIGHT: Horizontal track */}
+          <div className="w-full overflow-hidden">
+            <div
+              ref={trackRef}
+              className="flex gap-8 items-stretch will-change-transform"
+              style={{ paddingBottom: 12 }} // small space for shadow
+            >
+              {testimonialsData.map((testimonial, idx) => (
+                <article
+                  key={`${testimonial.name}-${idx}`}
+                  className="min-w-[85vw] md:min-w-[420px] lg:min-w-[480px] bg-gray-800/50 rounded-2xl p-8 shadow-2xl border border-blue-500/10 flex flex-col items-center text-center transform transition-all duration-300"
+                >
+                  <img
+                    src={testimonial.img}
+                    alt={`Avatar for ${testimonial.name}`}
+                    className="w-24 h-24 rounded-full mb-6 border-4 border-blue-400 object-cover shadow-lg"
+                  />
+                  <p className="text-gray-300 text-lg italic mb-6 leading-relaxed flex-grow">
+                    “{testimonial.quote}”
+                  </p>
+                  <div className="mt-auto">
+                    <span className="block text-blue-400 font-bold text-xl">{testimonial.name}</span>
+                    <span className="text-gray-500 text-sm">{testimonial.title}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

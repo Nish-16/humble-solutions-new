@@ -9,7 +9,6 @@ import GooeyNav from "./UI/GooeyNav";
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "Journey", href: "/journey" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
 ];
@@ -53,14 +52,21 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-gradient-to-r from-[#0a1a2f]/90 via-[#0a1a2f]/80 to-black/90 border-b border-blue-900/30 shadow-xl"
       ref={navRef}
+      className="
+        fixed top-4 mx-auto left-0 right-0
+        w-[85%] md:w-[80%]
+        z-50
+        backdrop-blur-xl
+        bg-gray-700
+        border border-blue-900/30
+        shadow-2xl
+        rounded-3xl
+      "
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 py-1 flex justify-between items-center">
         <Link href="/" aria-label="Go to home">
-          <span className="text-2xl font-bold text-blue-400 tracking-wide drop-shadow-lg">
-            Humble Solutions
-          </span>
+          <img src="/Home/logo.png" alt="Humble Solutions logo" className="h-10 w-auto ml-5" />
         </Link>
 
         {/* Desktop: Gooey nav (hover) */}
