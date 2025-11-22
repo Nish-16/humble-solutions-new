@@ -5,9 +5,9 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./components/AboutSection";
 import ServicesSection from "./components/ServicesSection";
-import FeaturesSection from "./components/FeaturesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import FooterSection from "./components/FooterSection";
+import HumbleAdvantage from "./components/HumbleAdvantage";
 
 export default function Home() {
   const pathname = usePathname();
@@ -22,7 +22,7 @@ export default function Home() {
         {/* in app/page.tsx (or wherever) */}
         <ServicesSection />
         <AboutSection />
-        <FeaturesSection />
+        <HumbleAdvantage />
         <TestimonialsSection />
         <FooterSection />
       </div>

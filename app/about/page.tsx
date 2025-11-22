@@ -19,7 +19,7 @@ export default function About() {
           </div>
           <Team />
         </main>
-        <FooterSection />
+      <FooterSection />
       </SmoothScroll>
     </div>
   );
