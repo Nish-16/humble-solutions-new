@@ -23,7 +23,12 @@ export default function Navbar() {
     if (!navRef.current) return;
     const ctx = gsap.context(() => {
       gsap.set(navRef.current, { y: -40, opacity: 0 });
-      gsap.to(navRef.current, { y: 0, opacity: 1, duration: 0.8, ease: "power4.out" });
+      gsap.to(navRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power4.out",
+      });
     }, navRef);
     return () => ctx.revert();
   }, [pathname]);
@@ -31,7 +36,9 @@ export default function Navbar() {
   // Lock scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   // Close mobile on Esc / outside click
@@ -66,12 +73,27 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-1 flex justify-between items-center">
         <Link href="/" aria-label="Go to home">
-          <img src="/Home/logo.png" alt="Humble Solutions logo" className="h-10 w-auto ml-5" />
+          <img
+            src="/Home/logo.png"
+            alt="Humble Solutions logo"
+            className="h-10 w-auto ml-5"
+          />
         </Link>
 
         {/* Desktop: Gooey nav (hover) */}
         <div className="hidden md:block">
           <GooeyNav items={NAV_ITEMS} />
+        </div>
+
+        {/* Desktop: Get Quote button */}
+        <div className="hidden md:flex items-center ml-4">
+          <Link
+            href="/services"
+            aria-label="Get a quote"
+            className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium shadow"
+          >
+            Get Quote
+          </Link>
         </div>
 
         {/* Hamburger (mobile) */}
@@ -83,12 +105,34 @@ export default function Navbar() {
           aria-controls="mobile-menu"
         >
           {open ? (
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+            <svg
+              width="32"
+              height="32"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                d="M6 6l12 12M18 6L6 18"
+              />
             </svg>
           ) : (
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              width="32"
+              height="32"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           )}
         </button>
@@ -102,7 +146,10 @@ export default function Navbar() {
           role="menu"
         >
           {NAV_ITEMS.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
+            const active =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname?.startsWith(item.href);
             return (
               <li key={item.href} role="none">
                 <Link
@@ -115,7 +162,9 @@ export default function Navbar() {
                     className={[
                       "block px-3 py-2 rounded-lg text-white font-medium",
                       "hover:bg-blue-700/30 hover:text-blue-300",
-                      active ? "bg-blue-700/40 text-blue-200 border border-blue-400/30 shadow-sm" : "",
+                      active
+                        ? "bg-blue-700/40 text-blue-200 border border-blue-400/30 shadow-sm"
+                        : "",
                     ].join(" ")}
                   >
                     {item.label}
@@ -124,6 +173,17 @@ export default function Navbar() {
               </li>
             );
           })}
+          <li role="none">
+            <Link
+              href="/services"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              <span className="block w-full text-center px-3 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 font-medium">
+                Get Quote
+              </span>
+            </Link>
+          </li>
         </ul>
       )}
     </nav>

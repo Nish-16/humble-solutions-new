@@ -1,17 +1,19 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { Instagram, Linkedin } from "lucide-react";
-
-
+import Link from "next/link"; // ⭐ Must import Link for internal navigation
 
 const FooterSection = () => {
 
-    useEffect(() => {
+  useEffect(() => {
     console.log("FooterSection mounted");
   }, []);
+
   return (
     <footer className="relative z-40 bg-[#0B0F19] text-white px-6 md:px-16 py-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 items-start justify-items-center md:justify-items-start">
+        
         {/* 1. Logo + Social Icons */}
         <div className="flex flex-col gap-10 justify-center items-center md:items-start md:justify-start w-full">
           <div className="space-y-2 w-full flex flex-col items-center md:items-start">
@@ -21,16 +23,24 @@ const FooterSection = () => {
               className="w-50 mx-auto md:mx-0"
             />
           </div>
+
           <div className="flex gap-4 mt-2 justify-center md:justify-start mr-0 md:mr-10 w-full">
+            {/* Instagram */}
             <a
-              href="#"
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-blue-400 transition-colors"
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" />
             </a>
+
+            {/* LinkedIn */}
             <a
-              href="#"
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-blue-400 transition-colors"
               aria-label="LinkedIn"
             >
@@ -43,14 +53,14 @@ const FooterSection = () => {
         <div className="flex flex-col text-sm leading-6 space-y-7 items-center md:items-start text-center md:text-left w-full">
           <div>
             <strong className="block text-white text-lg">Email</strong>
-            <span className="text-gray-300 text-xs">
-              executives@humblesolutions.in
-            </span>
+            <span className="text-gray-300 text-xs">executives@humblesolutions.in</span>
           </div>
+
           <div>
             <strong className="block text-white text-lg">Phone</strong>
             <span className="text-gray-300 text-xs">+91 81949 63318</span>
           </div>
+
           <div>
             <strong className="block text-white text-lg">Address</strong>
             <span className="text-gray-300 text-xs">Punjab, India</span>
@@ -60,37 +70,33 @@ const FooterSection = () => {
         {/* 3. Company Links */}
         <div className="flex flex-col gap-2 text-sm space-y-3 items-center md:items-start text-center md:text-left w-full">
           <h4 className="text-white font-semibold mb-2 text-xl">Company</h4>
-          <a href="/" className="text-gray-300 hover:text-blue-400">
-            Home
-          </a>
-          <a href="/services" className="text-gray-300 hover:text-blue-400">
-            Services
-          </a>
-          <a href="/portfolio" className="text-gray-300 hover:text-blue-400">
-            Portfolio
-          </a>
-          <a href="/about" className="text-gray-300 hover:text-blue-400">
-            About Us
-          </a>
-        </div>
 
-        {/* 4. Support Links */}
-        {/* <div className="flex flex-col gap-2 text-sm space-y-3 items-center md:items-start text-center md:text-left w-full">
-          <h4 className="text-white font-semibold mb-2 text-xl">Support</h4>
-          <a href="#" className="text-gray-300 hover:text-blue-400">Help center</a>
-          <a href="#" className="text-gray-300 hover:text-blue-400">Terms of service</a>
-          <a href="#" className="text-gray-300 hover:text-blue-400">Legal</a>
-          <a href="#" className="text-gray-300 hover:text-blue-400">Privacy policy</a>
-        </div> */}
+          <Link href="/" className="text-gray-300 hover:text-blue-400">
+            Home
+          </Link>
+
+          <Link href="/services" className="text-gray-300 hover:text-blue-400">
+            Services
+          </Link>
+
+          <Link href="/portfolio" className="text-gray-300 hover:text-blue-400">
+            Portfolio
+          </Link>
+
+          <Link href="/about" className="text-gray-300 hover:text-blue-400">
+            About Us
+          </Link>
+        </div>
 
         {/* 5. Right-side Illustration */}
         <div className="flex justify-center md:justify-end items-start w-full">
           <img
-            src={`/photos/footer.svg`}
+            src="/photos/footer.svg"
             alt="Footer Illustration"
             className="max-w-full"
           />
         </div>
+
       </div>
 
       {/* Bottom Border */}

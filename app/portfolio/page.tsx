@@ -12,7 +12,7 @@ import SmoothScroll from "../journey/SmoothScroll";
 
 export default function Page() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] ">
+    <div className="relative min-h-screen bg-[#020617] ">
       <GalaxyBackground />
       <SmoothScroll />
       <Navbar />
