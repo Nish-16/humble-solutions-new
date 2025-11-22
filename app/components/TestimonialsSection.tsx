@@ -19,24 +19,17 @@ const TestimonialsSection: React.FC = () => {
 
     const ctx = gsap.context(() => {
       ScrollTrigger.matchMedia({
-        // Desktop & tablet behavior: two-column layout with pinned horizontal scroll
         "(min-width: 768px)": function () {
           const sectionEl = sectionRef.current!;
           const trackEl = trackRef.current!;
           const leftEl = leftRef.current!;
 
-          // compute visible width available to the horizontal track:
-          // total section width minus left column width (sticky content)
           const sectionWidth = sectionEl.offsetWidth;
           const leftWidth = leftEl.getBoundingClientRect().width;
           const visibleWidth = Math.max(0, sectionWidth - leftWidth);
-
-          // compute how much we need to move the track so all cards become visible
           const distance = Math.max(0, trackEl.scrollWidth - visibleWidth);
 
-          // If there's nothing to scroll, don't pin/animate (avoids weird pin behavior)
           if (distance <= 0) {
-            // still run heading reveal
             const headingChars = headingRef.current
               ? gsap.utils.toArray(headingRef.current.children)
               : [];
@@ -48,13 +41,11 @@ const TestimonialsSection: React.FC = () => {
             return;
           }
 
-          // create the main timeline (we'll pass this timeline into containerAnimation for card triggers)
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             scrollTrigger: {
               trigger: sectionEl,
               start: "top top",
-              // pin for exactly the amount needed to move the track by `distance`
               end: () => `+=${distance}`,
               scrub: 0.8,
               pin: true,
@@ -63,7 +54,6 @@ const TestimonialsSection: React.FC = () => {
             },
           });
 
-          // Reveal heading characters (runs at start)
           const headingChars = headingRef.current
             ? gsap.utils.toArray(headingRef.current.children)
             : [];
@@ -74,10 +64,8 @@ const TestimonialsSection: React.FC = () => {
             0
           );
 
-          // Move the track left by `distance`
           tl.to(trackEl, { x: -distance, duration: 1, ease: "none" }, 0.1);
 
-          // Per-card subtle scale effect using ScrollTrigger bound to the container animation (tl).
           const cards = gsap.utils.toArray(trackEl.children) as HTMLElement[];
 
           cards.forEach((card) => {
@@ -92,11 +80,9 @@ const TestimonialsSection: React.FC = () => {
             });
           });
 
-          // Optional: keep left column sticky while pinned (we can animate it slightly if we want)
           gsap.set(leftEl, { y: 0 });
         },
 
-        // Mobile & small screens: stacked layout, simple heading reveal
         "all": function () {
           const headingChars = headingRef.current
             ? gsap.utils.toArray(headingRef.current.children)
@@ -122,7 +108,6 @@ const TestimonialsSection: React.FC = () => {
       });
     }, sectionRef);
 
-    // refresh ScrollTrigger on resize so `end()` recomputes accurately
     const onResize = () => {
       ScrollTrigger.refresh();
     };
@@ -130,7 +115,6 @@ const TestimonialsSection: React.FC = () => {
 
     return () => {
       window.removeEventListener("resize", onResize);
-      // revert context and kill any ScrollTriggers created
       ctx.revert();
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
@@ -143,13 +127,10 @@ const TestimonialsSection: React.FC = () => {
       aria-label="Testimonials horizontal scroll with left text"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Layout: two columns on md+, stacked on small screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* LEFT: Sticky text block */}
           <div
             ref={leftRef}
             className="relative md:pr-8"
-            // make content stick within the pinned section on desktop
           >
             <div className="md:sticky md:top-24">
               <h2
@@ -166,7 +147,7 @@ const TestimonialsSection: React.FC = () => {
 
               <p className="text-gray-300 mb-6 leading-relaxed">
                 We partner with ambitious companies to build beautiful, dependable products.
-                Here are a few words from the people we've worked with.
+                Here are a few words from the people we&apos;ve worked with.
               </p>
 
               <a
@@ -178,12 +159,11 @@ const TestimonialsSection: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT: Horizontal track */}
           <div className="w-full overflow-hidden">
             <div
               ref={trackRef}
               className="flex gap-8 items-stretch will-change-transform"
-              style={{ paddingBottom: 12 }} // small space for shadow
+              style={{ paddingBottom: 12 }}
             >
               {testimonialsData.map((testimonial, idx) => (
                 <article
