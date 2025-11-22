@@ -27,15 +27,16 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   useEffect(() => {
     if (!sectionRef.current) return;
 
+    // --- FIX: snapshot stable refs ---
+    const section = sectionRef.current;
+    const boxes = [...boxesRef.current]; // snapshot for effect + cleanup
+
     let layoutRAF = 0;
     let tl: gsap.core.Timeline | null = null;
     let globeTween: gsap.core.Tween | null = null;
     let st: ScrollTrigger | null = null;
 
     const build = () => {
-      const section = sectionRef.current!;
-      const boxes = boxesRef.current;
-
       const rect = section.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
@@ -112,7 +113,7 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
 
     const onResize = () => {
       cancelAnimationFrame(layoutRAF);
-      layoutRAF = requestAnimationFrame(() => build());
+      layoutRAF = requestAnimationFrame(build);
     };
 
     window.addEventListener("resize", onResize);
@@ -120,10 +121,13 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     return () => {
       cancelAnimationFrame(layoutRAF);
       window.removeEventListener("resize", onResize);
+
+      // --- FIX: cleanup uses snapshot (boxes), not boxesRef.current ---
       tl?.kill();
       globeTween?.kill();
       st?.kill();
-      gsap.killTweensOf(boxesRef.current);
+      gsap.killTweensOf(boxes);
+
       ScrollTrigger.refresh();
     };
   }, []);
@@ -150,7 +154,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         />
       </div>
 
-      {/* Dynamic boxes */}
       {earthBoxes.map((box, idx) => {
         const Icon = box.icon;
         return (
