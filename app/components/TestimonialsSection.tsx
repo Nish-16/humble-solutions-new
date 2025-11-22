@@ -37,7 +37,7 @@ const TestimonialsSection: React.FC = () => {
 
           gsap.set(trackEl, { display: "flex" });
 
-          // REDUCED SPACE — use a smaller minimum + small responsive growth
+          // NOTE: extraSpace kept as-is per your request (no change)
           const extraSpace = Math.max(400, Math.round(window.innerWidth * 0.05));
 
           spacerEl = document.createElement("div");
@@ -191,7 +191,7 @@ const TestimonialsSection: React.FC = () => {
 
               <p className="text-gray-300 mb-6 leading-relaxed">
                 We partner with ambitious companies to build beautiful, dependable products.
-                Here are a few words from the people we've worked with.
+                Here are a few words from the people we&apos;ve worked with.
               </p>
 
               <a
