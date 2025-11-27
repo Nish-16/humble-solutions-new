@@ -88,7 +88,7 @@ export default function Navbar() {
         {/* Desktop: Get Quote button */}
         <div className="hidden md:flex items-center ml-4">
           <Link
-            href="/services"
+            href="/#contact"
             aria-label="Get a quote"
             className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium shadow"
           >
@@ -175,7 +175,7 @@ export default function Navbar() {
           })}
           <li role="none">
             <Link
-              href="/services"
+              href="/#contact"
               role="menuitem"
               onClick={() => setOpen(false)}
             >

@@ -8,6 +8,7 @@ import ServicesSection from "./components/ServicesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import FooterSection from "./components/FooterSection";
 import HumbleAdvantage from "./components/HumbleAdvantage";
+import ContactSection from "./components/ContactSection"; 
 
 export default function Home() {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function Home() {
         <ServicesSection />
         <AboutSection />
         <HumbleAdvantage />
+        <ContactSection />
         <TestimonialsSection />
         <FooterSection />
       </div>

@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import robot from "../../public/Robot.json"; // adjust path based on your project
+import GalaxyBackground from "./GalaxyBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -90,17 +91,19 @@ const AboutSection: React.FC = () => {
       className="relative flex flex-col items-center justify-center px-6 sm:px-12 py-20 bg-gray-900 overflow-hidden"
       id="about"
     >
+      {/* Canvas background */}
+      <GalaxyBackground />
       {/* Subtle glowing background accents */}
       <div className="absolute top-1/4 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
       <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl animate-pulse-slow delay-2000"></div>
 
-      <div className="relative flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-16 w-full max-w-6xl mx-auto">
+      <div className="relative flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-16 w-full max-w-6xl mx-auto z-10">
         <div className="flex-shrink-0 mb-8 md:mb-0 order-first md:order-last">
           <div className="rounded-full shadow-2xl p-2">
             <Lottie
-            animationData={robot}
-            loop={true}
-            className="w-48 h-48 sm:w-56 sm:h-56 md:w-80 md:h-80"
+              animationData={robot}
+              loop={true}
+              className="w-48 h-48 sm:w-56 sm:h-56 md:w-80 md:h-80"
             />
           </div>
         </div>

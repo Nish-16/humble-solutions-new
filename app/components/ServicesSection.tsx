@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import React, { useEffect, useRef } from "react";
+import GalaxyBackground from "./GalaxyBackground";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { servicesData } from "./data/Service_data";
@@ -85,7 +86,9 @@ export default function ServicesSection() {
     el.style.setProperty("--light-opacity", "1");
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseLeave = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     const el = e.currentTarget;
     el.style.setProperty("--light-opacity", "0");
   };
@@ -96,6 +99,8 @@ export default function ServicesSection() {
       className="relative bg-gray-900 text-white py-20 sm:py-32 overflow-hidden"
       id="services"
     >
+      {/* Canvas background */}
+      <GalaxyBackground />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
         <h2
           ref={headingRef}
@@ -111,13 +116,15 @@ export default function ServicesSection() {
               className={`service-card relative bg-gradient-to-br ${service.gradient} rounded-2xl p-8 shadow-2xl border ${service.border} flex flex-col items-center text-center backdrop-blur-lg transition-transform duration-300`}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              style={{
-                position: "relative",
-                overflow: "hidden",
-                "--light-opacity": "0",
-                "--mx": "50%",
-                "--my": "50%",
-              } as React.CSSProperties}
+              style={
+                {
+                  position: "relative",
+                  overflow: "hidden",
+                  "--light-opacity": "0",
+                  "--mx": "50%",
+                  "--my": "50%",
+                } as React.CSSProperties
+              }
             >
               {/* Glow Overlay */}
               <div

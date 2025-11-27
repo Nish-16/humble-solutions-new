@@ -3,11 +3,12 @@
 
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { testimonialsData } from "./data/clients";
 
-// Register the ScrollTrigger plugin once
-gsap.registerPlugin(ScrollTrigger);
+// NOTE: We no longer need ScrollTrigger for horizontal pin/translate behaviour.
+// If you still use ScrollTrigger elsewhere, keep registration; otherwise you can remove it.
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
+// gsap.registerPlugin(ScrollTrigger);
 
 const TestimonialsSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -15,155 +16,91 @@ const TestimonialsSection: React.FC = () => {
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // Use a flag instead of early-returning before hooks
   const hasData = testimonialsData.length > 0;
 
   useLayoutEffect(() => {
     if (!hasData) return;
-
-    if (!sectionRef.current || !trackRef.current || !leftRef.current) {
-      return;
-    }
-
-    // We'll create a spacer element that we can remove on cleanup
-    let spacerEl: HTMLDivElement | null = null;
+    if (!sectionRef.current || !trackRef.current || !leftRef.current) return;
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.matchMedia({
-        "(min-width: 768px)": function () {
-          const sectionEl = sectionRef.current!;
-          const trackEl = trackRef.current!;
-          const leftEl = leftRef.current!;
+      // Heading entrance (staggered chars)
+      const headingChars = headingRef.current
+        ? gsap.utils.toArray(headingRef.current.children)
+        : [];
 
-          gsap.set(trackEl, { display: "flex" });
+      gsap.fromTo(
+        headingChars,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.02,
+          duration: 0.6,
+          ease: "power3.out",
+        }
+      );
 
-          // NOTE: extraSpace kept as-is per your request (no change)
-          const extraSpace = Math.max(400, Math.round(window.innerWidth * 0.05));
-
-          spacerEl = document.createElement("div");
-          spacerEl.style.width = `${extraSpace}px`;
-          spacerEl.style.flex = "0 0 auto";
-          spacerEl.setAttribute("aria-hidden", "true");
-          trackEl.appendChild(spacerEl);
-
-          // Calculate Dimensions
-          const sectionWidth = sectionEl.offsetWidth;
-          const leftWidth = leftEl.getBoundingClientRect().width;
-          const visibleWidth = Math.max(0, sectionWidth - leftWidth);
-
-          // The distance the track needs to translate
-          const distance = Math.max(0, trackEl.scrollWidth - visibleWidth);
-
-          // If content is smaller than visible area → heading only
-          if (distance <= 0) {
-            const headingChars = headingRef.current
-              ? gsap.utils.toArray(headingRef.current.children)
-              : [];
-            gsap.fromTo(
-              headingChars,
-              { y: 40, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                stagger: 0.02,
-                duration: 0.6,
-                ease: "power3.out",
-              }
-            );
-            return;
+      // Cards fade/slide in (no pin / horizontal driving)
+      const cards = gsap.utils.toArray(trackRef.current!.children) as HTMLElement[];
+      cards.forEach((card, i) => {
+        gsap.fromTo(
+          card,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            delay: Math.min(0.15 * i, 0.6),
+            ease: "power3.out",
           }
-
-          // Main timeline
-          const tl = gsap.timeline({
-            defaults: { ease: "none" },
-            scrollTrigger: {
-              trigger: sectionEl,
-              start: "top top",
-              end: () => `+=${distance}`,
-              scrub: 0.8,
-              pin: true,
-              pinSpacing: true,
-              anticipatePin: 1,
-            },
-          });
-
-          // Heading animation
-          const headingChars = headingRef.current
-            ? gsap.utils.toArray(headingRef.current.children)
-            : [];
-          gsap.fromTo(
-            headingChars,
-            { y: 40, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              stagger: 0.02,
-              duration: 0.6,
-              ease: "power3.out",
-            }
-          );
-
-          // Track movement
-          tl.to(trackEl, { x: -distance, duration: 1 }, 0.1);
-
-          // Individual card animation
-          const cards = gsap.utils.toArray(trackEl.children) as HTMLElement[];
-          cards.forEach((card) => {
-            ScrollTrigger.create({
-              trigger: card,
-              start: "left center",
-              end: "right center",
-              containerAnimation: tl,
-              scrub: true,
-              onUpdate: (self) => {
-                const progress = self.progress;
-                let scaleFactor = 1;
-                if (progress > 0.1 && progress < 0.9) {
-                  const normalized = (progress - 0.1) / 0.8;
-                  scaleFactor = 1 + 0.03 * Math.sin(normalized * Math.PI);
-                }
-                gsap.to(card, { scale: scaleFactor, duration: 0.15 });
-              },
-            });
-          });
-
-          gsap.set(leftEl, { y: 0 });
-        },
-
-        "all": function () {
-          const headingChars = headingRef.current
-            ? gsap.utils.toArray(headingRef.current.children)
-            : [];
-          gsap.fromTo(
-            headingChars,
-            { y: 30, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              stagger: 0.02,
-              duration: 0.6,
-              ease: "power3.out",
-            }
-          );
-        },
+        );
       });
+
+      // Keep left panel stable
+      gsap.set(leftRef.current, { y: 0 });
     }, sectionRef);
 
-    const onResize = () => ScrollTrigger.refresh();
-    window.addEventListener("resize", onResize);
-
     return () => {
-      window.removeEventListener("resize", onResize);
-
-      if (spacerEl && spacerEl.parentNode) {
-        spacerEl.parentNode.removeChild(spacerEl);
-      }
       ctx.revert();
     };
   }, [hasData]);
 
-  // Safe return AFTER hooks
   if (!hasData) return null;
+
+  // Wheel handler: when user scrolls vertically while hovering the track,
+  // convert that to horizontal scroll. This is optional but provides
+  // a UX where mouse-wheel/trackpad vertical scroll will pan horizontally
+  // only when cursor is over the track.
+  const onTrackWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    // If user holds shift, allow native horizontal behavior; if horizontal delta already present, do nothing.
+    const isHorizontalScroll = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (e.shiftKey || isHorizontalScroll) {
+      return; // fall back to native handling
+    }
+
+    // Prevent the page from vertically scrolling while cursor is over the track
+    e.preventDefault();
+
+    // Scroll horizontally by the vertical delta
+    el.scrollLeft += e.deltaY;
+  };
+
+  // Keyboard support for left/right arrows when track has focus
+  const onTrackKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const step = Math.round(window.innerWidth * 0.4); // smaller chunk for more natural feel
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      el.scrollBy({ left: step, behavior: "smooth" });
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      el.scrollBy({ left: -step, behavior: "smooth" });
+    }
+  };
 
   return (
     <section
@@ -173,7 +110,6 @@ const TestimonialsSection: React.FC = () => {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          
           {/* LEFT PANEL */}
           <div ref={leftRef} className="relative md:pr-8">
             <div className="md:sticky md:top-24">
@@ -204,14 +140,20 @@ const TestimonialsSection: React.FC = () => {
           </div>
 
           {/* RIGHT TRACK */}
-          <div className="w-full overflow-hidden">
+          <div className="w-full">
             <div
               ref={trackRef}
-              className="flex gap-8 items-stretch will-change-transform"
-              style={{ paddingBottom: 12 }}
+              className="flex gap-8 items-stretch will-change-transform overflow-x-auto touch-pan-x px-4 py-4 scrollbar-hide"
+              style={{ paddingBottom: 12 /* removed scrollSnapType to disable snapping */ }}
+              onWheel={onTrackWheel}
+              onKeyDown={onTrackKeyDown}
+              tabIndex={0} // make focusable for arrow-key support
+              role="list"
+              aria-label="Client testimonials carousel"
             >
               {testimonialsData.map((testimonial, idx) => (
                 <article
+                  role="listitem"
                   key={`${testimonial.name}-${idx}`}
                   className="min-w-[85vw] md:min-w-[420px] lg:min-w-[480px] bg-gray-800/50 rounded-2xl p-8 shadow-2xl border border-blue-500/10 flex flex-col items-center text-center"
                 >
@@ -235,6 +177,11 @@ const TestimonialsSection: React.FC = () => {
                   </div>
                 </article>
               ))}
+            </div>
+
+            {/* Optional hint for users (small, unobtrusive) */}
+            <div className="mt-3 text-sm text-gray-400 hidden md:block">
+              Tip: swipe / drag to scroll horizontally — or hover and use your mouse wheel.
             </div>
           </div>
         </div>
