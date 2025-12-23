@@ -8,7 +8,7 @@ import ServicesSection from "./components/ServicesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import FooterSection from "./components/FooterSection";
 import HumbleAdvantage from "./components/HumbleAdvantage";
-import ContactSection from "./components/ContactSection"; 
+import ContactSection from "./components/ContactSection";
 
 export default function Home() {
   const pathname = usePathname();
@@ -17,11 +17,14 @@ export default function Home() {
     <div>
       <Navbar />
 
-      {/* Use key={pathname} to force HeroSection to remount on navigation */}
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a1a2f] via-[#0a1a2f] to-black text-white relative z-10">
         <HeroSection key={pathname} />
-        {/* in app/page.tsx (or wherever) */}
-        <ServicesSection />
+
+        {/* 👇 ONLY PHONES */}
+        <div className="block md:hidden">
+          <ServicesSection />
+        </div>
+
         <AboutSection />
         <HumbleAdvantage />
         <ContactSection />

@@ -144,12 +144,27 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full ${size} flex flex-col items-center justify-center overflow-hidden px-6`}
+      className={`relative w-full ${size} flex flex-col items-center overflow-hidden px-6`}
     >
       <GalaxyBackground />
 
-      {/* ================= HEADING ================= */}
-      <h2 className="relative z-30 mb-10 text-center text-3xl md:text-5xl font-bold tracking-tight text-white">
+      {/* ================= HEADING (TOP CENTER) ================= */}
+      <h2
+        className="
+          services-heading
+          absolute
+          top-8
+          left-1/2
+          -translate-x-1/2
+          z-30
+          text-center
+          text-3xl
+          md:text-5xl
+          font-bold
+          tracking-tight
+          text-white
+        "
+      >
         Our Services
       </h2>
 

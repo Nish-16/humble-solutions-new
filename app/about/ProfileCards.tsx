@@ -21,9 +21,20 @@ export default function ProfileCard({
   enableMobileTilt = true,
 }: ProfileCardProps) {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [isHover, setIsHover] = useState(false);
 
-  // Tilt logic
+  /* ================= STATE ================= */
+  const [isActive, setIsActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  /* ================= MOBILE CHECK ================= */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  /* ================= TILT LOGIC ================= */
   const requestRef = useRef<number | null>(null);
   const pointer = useRef({ x: 0, y: 0 });
   const rotation = useRef({ rx: 0, ry: 0 });
@@ -44,12 +55,7 @@ export default function ProfileCard({
         requestRef.current = requestAnimationFrame(animate);
     }
 
-    function onEnter() {
-      setIsHover(true);
-    }
-
     function onLeave() {
-      setIsHover(false);
       pointer.current.x = 0;
       pointer.current.y = 0;
       if (!requestRef.current)
@@ -76,12 +82,8 @@ export default function ProfileCard({
       }
     }
 
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerenter", onEnter);
-    el.addEventListener("pointerleave", onLeave);
-
     function onDevice(e: DeviceOrientationEvent) {
-      if (!enableMobileTilt) return;
+      if (!enableMobileTilt || !isMobile) return;
       if (e.gamma == null || e.beta == null) return;
       const gx = Math.max(-30, Math.min(30, e.gamma));
       const by = Math.max(-30, Math.min(30, e.beta - 5));
@@ -91,24 +93,26 @@ export default function ProfileCard({
         requestRef.current = requestAnimationFrame(animate);
     }
 
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", onLeave);
     window.addEventListener("deviceorientation", onDevice as EventListener);
 
     return () => {
       el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerenter", onEnter);
       el.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("deviceorientation", onDevice as EventListener);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [enableTilt, enableMobileTilt]);
+  }, [enableTilt, enableMobileTilt, isMobile]);
 
+  /* ================= RENDER ================= */
   return (
     <motion.div
       ref={cardRef}
       className={`relative w-64 h-80 rounded-2xl overflow-hidden shadow-xl cursor-pointer bg-slate-900/20 border border-white/20 backdrop-blur-md ${className}`}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
-      onTouchStart={() => setIsHover((prev) => !prev)}
+      onMouseEnter={() => !isMobile && setIsActive(true)}
+      onMouseLeave={() => !isMobile && setIsActive(false)}
+      onClick={() => isMobile && setIsActive((prev) => !prev)}
     >
       {/* Background image */}
       <img
@@ -120,13 +124,16 @@ export default function ProfileCard({
       {/* Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: isHover ? 1 : 0 }}
+        animate={{ opacity: isActive ? 1 : 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end justify-center p-5"
       >
         <motion.div
           initial={{ y: 20, opacity: 0 }}
-          animate={{ y: isHover ? 0 : 20, opacity: isHover ? 1 : 0 }}
+          animate={{
+            y: isActive ? 0 : 20,
+            opacity: isActive ? 1 : 0,
+          }}
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="text-center text-white"
         >
