@@ -105,7 +105,7 @@ const TestimonialsSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="bg-gray-900 text-white py-26 sm:py-32 overflow-hidden"
+      className="bg-gray-900 text-white py-26 sm:py-20 overflow-hidden"
       aria-label="Testimonials horizontal scroll with left text"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -160,7 +160,7 @@ const TestimonialsSection: React.FC = () => {
                   <img
                     src={testimonial.img}
                     alt={testimonial.name}
-                    className="w-24 h-24 rounded-full mb-6 border-4 border-blue-400 object-cover shadow-lg"
+                    className="w-24 h-24 rounded-full mb-2 border-4 border-blue-400 object-cover shadow-lg"
                   />
 
                   <p className="text-gray-300 text-lg italic mb-6 flex-grow">
@@ -180,9 +180,7 @@ const TestimonialsSection: React.FC = () => {
             </div>
 
             {/* Optional hint for users (small, unobtrusive) */}
-            <div className="mt-3 text-sm text-gray-400 hidden md:block">
-              Tip: swipe / drag to scroll horizontally — or hover and use your mouse wheel.
-            </div>
+
           </div>
         </div>
       </div>

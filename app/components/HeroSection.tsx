@@ -128,7 +128,7 @@ const HeroSection: React.FC = () => {
                     animationData={animationData}
                     loop
                     autoplay
-                    style={{ width: "100%", height: "100%" }}
+                    style={{ width: "100%", height: "100%",transform: "scale(1.25)" }}
                   />
                 ) : (
                   <div className="w-full h-full bg-zinc-900/30 rounded-md flex items-center justify-center text-sm text-zinc-400">
