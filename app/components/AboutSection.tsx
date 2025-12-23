@@ -98,7 +98,7 @@ const AboutSection: React.FC = () => {
       <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl animate-pulse-slow delay-2000"></div>
 
       <div className="relative flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-16 w-full max-w-6xl mx-auto z-10">
-        <div className="flex-shrink-0 mb-8 md:mb-0 order-first md:order-last">
+        <div className="flex-shrink-0 mb-0 md:mb-0 order-first md:order-last">
           <div className="rounded-full shadow-2xl p-2">
             <Lottie
               animationData={robot}

@@ -17,7 +17,6 @@ const ContactSection = () => {
   >("idle");
 
   useEffect(() => {
-    // 🔑 GSAP CONTEXT
     const ctx = gsap.context(() => {
       if (leftRef.current) {
         gsap.fromTo(
@@ -54,7 +53,6 @@ const ContactSection = () => {
       }
     });
 
-    // 🔥 CLEANUP
     return () => ctx.revert();
   }, []);
 
@@ -92,6 +90,7 @@ const ContactSection = () => {
       className="py-20 md:py-20 lg:py-24 flex items-center justify-center bg-gradient-to-br from-[#2057C5] to-[#9CBDFF] text-white px-4 overflow-x-hidden"
     >
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        {/* LEFT */}
         <div ref={leftRef} className="text-center lg:text-left">
           <h3 className="text-xl font-medium mb-2">Got a Project in Mind?</h3>
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
@@ -105,7 +104,9 @@ const ContactSection = () => {
           />
         </div>
 
+        {/* RIGHT FORM */}
         <form
+          suppressHydrationWarning
           ref={rightRef}
           action="https://formspree.io/f/mnqkgeav"
           method="POST"
@@ -173,6 +174,7 @@ const ContactSection = () => {
               ✅ Thank you! Your message has been sent.
             </p>
           )}
+
           {status === "error" && (
             <p className="text-red-200 text-sm">
               ❌ Oops! Something went wrong.

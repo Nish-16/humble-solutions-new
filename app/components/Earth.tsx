@@ -17,7 +17,6 @@ type EarthProps = {
 
 export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const globeWrapRef = useRef<HTMLDivElement | null>(null);
   const boxesRef = useRef<HTMLDivElement[]>([]);
 
   const setBoxRef = (el: HTMLDivElement | null, idx: number) => {
@@ -27,9 +26,8 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    // --- FIX: snapshot stable refs ---
     const section = sectionRef.current;
-    const boxes = [...boxesRef.current]; // snapshot for effect + cleanup
+    const boxes = [...boxesRef.current];
 
     let layoutRAF = 0;
     let tl: gsap.core.Timeline | null = null;
@@ -122,7 +120,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       cancelAnimationFrame(layoutRAF);
       window.removeEventListener("resize", onResize);
 
-      // --- FIX: cleanup uses snapshot (boxes), not boxesRef.current ---
       tl?.kill();
       globeTween?.kill();
       st?.kill();
@@ -132,20 +129,32 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     };
   }, []);
 
-  const boxClasses =
-    "info-box absolute w-44 md:w-56 p-4 bg-gradient-to-br from-black/40 to-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl text-white text-center z-20";
+  /* ================= COLOR MAP ================= */
+
+  const boxColorMap: Record<string, string> = {
+    indigo: "from-indigo-500/25 to-indigo-300/5 border-indigo-400/30",
+    emerald: "from-emerald-500/25 to-emerald-300/5 border-emerald-400/30",
+    cyan: "from-cyan-500/25 to-cyan-300/5 border-cyan-400/30",
+    violet: "from-violet-500/25 to-violet-300/5 border-violet-400/30",
+  };
+
+  const baseBoxClasses =
+    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl shadow-2xl text-white text-center z-20 bg-gradient-to-br";
 
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full ${size} flex items-center justify-center overflow-hidden px-6`}
+      className={`relative w-full ${size} flex flex-col items-center justify-center overflow-hidden px-6`}
     >
       <GalaxyBackground />
 
-      <div
-        ref={globeWrapRef}
-        className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
-      >
+      {/* ================= HEADING ================= */}
+      <h2 className="relative z-30 mb-10 text-center text-3xl md:text-5xl font-bold tracking-tight text-white">
+        Our Services
+      </h2>
+
+      {/* ================= EARTH ================= */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         <Lottie
           animationData={Globe}
           loop
@@ -154,13 +163,19 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         />
       </div>
 
+      {/* ================= BOXES ================= */}
       {earthBoxes.map((box, idx) => {
         const Icon = box.icon;
+
         return (
           <div
             key={box.id}
             ref={(el) => setBoxRef(el, idx)}
-            className={`${boxClasses} ${box.position}`}
+            className={`
+              ${baseBoxClasses}
+              ${box.position}
+              ${boxColorMap[box.color] ?? boxColorMap.indigo}
+            `}
           >
             <div className="flex items-center justify-center mb-3">
               <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shadow-lg backdrop-blur-lg">

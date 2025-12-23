@@ -8,7 +8,7 @@ export type ServiceItem = {
 };
 
 export const hero = {
-  title: "Modern engineering. Impactful results.",
+  title: "Our Services",
   subtitle:
     "We build production-grade software, automate workflows, and design delightful products that scale. Subtle motion and refined layout make the experience feel modern and approachable.",
 };

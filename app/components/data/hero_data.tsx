@@ -6,6 +6,7 @@ export type EarthBox = {
   description: string;
   position: string;
   icon: any;
+  color: "indigo" | "emerald" | "cyan" | "violet";
 };
 
 export const earthBoxes: EarthBox[] = [
@@ -16,6 +17,7 @@ export const earthBoxes: EarthBox[] = [
       "High-performance websites, dashboards, landing pages, and custom platforms built with modern frameworks.",
     position: "left-[6%] top-[14%]",
     icon: Globe,
+    color: "indigo",
   },
   {
     id: 2,
@@ -24,6 +26,7 @@ export const earthBoxes: EarthBox[] = [
       "Cross-platform mobile apps with great UI, fast performance, and smooth user experiences.",
     position: "left-[6%] bottom-[14%]",
     icon: Smartphone,
+    color: "emerald",
   },
   {
     id: 3,
@@ -32,6 +35,7 @@ export const earthBoxes: EarthBox[] = [
       "Human-centered design, wireframing, prototyping, and complete product design systems.",
     position: "right-[6%] top-[14%]",
     icon: Palette,
+    color: "cyan",
   },
   {
     id: 4,
@@ -40,5 +44,6 @@ export const earthBoxes: EarthBox[] = [
       "Integrated digital + physical solutions including IoT systems, embedded hardware, and custom software.",
     position: "right-[6%] bottom-[14%]",
     icon: Cpu,
+    color: "violet",
   },
 ];

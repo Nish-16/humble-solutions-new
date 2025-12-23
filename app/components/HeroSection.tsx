@@ -90,31 +90,31 @@ const HeroSection: React.FC = () => {
             {/* ---------- LEFT TEXT ---------- */}
             <div
               ref={contentRef}
-              className="md:w-1/2 w-full flex flex-col justify-center text-left"
+              className="md:w-1/2 w-full flex flex-col justify-center text-center md:text-left pt-24 md:pt-0"
             >
               <TypingText
                 text={["Humble Solutions"]}
                 typingSpeed={80}
                 pauseDuration={1500}
                 showCursor
-                className="gsap-hero-title text-5xl sm:text-6xl font-bold mb-4"
+                className="gsap-hero-title text-4xl sm:text-6xl font-bold mb-4"
                 cursorClassName="h-12"
                 textColors={["#3b82f6", "#8b5cf6", "#06b6d4"]}
                 variableSpeed={{ min: 100, max: 200 }}
               />
 
-              <p className="gsap-hero-desc text-lg sm:text-2xl max-w-2xl mb-6 text-white/80">
+              <p className="gsap-hero-desc text-base sm:text-2xl max-w-2xl mb-6 text-white/80">
                 Boost Your Sales Exponentially With Memorable Digital Experiences
               </p>
 
-              <p className="gsap-hero-desc text-base sm:text-xl max-w-2xl mb-10 text-white/60">
+              <p className="gsap-hero-desc text-sm sm:text-xl max-w-2xl mb-10 text-white/60">
                 Our responsive apps, websites, and user-centric UI/UX designs
                 craft outstanding customer journeys that drive conversions.
               </p>
 
               <a
                 href="#services"
-                className="gsap-cta inline-block w-fit px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-lg font-semibold shadow-lg transition-colors"
+                className="gsap-cta inline-block w-fit px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-base md:text-lg font-semibold shadow-lg transition-colors mx-auto md:mx-0"
               >
                 See Our Solutions
               </a>
