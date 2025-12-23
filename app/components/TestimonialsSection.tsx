@@ -160,7 +160,7 @@ const TestimonialsSection: React.FC = () => {
                   <img
                     src={testimonial.img}
                     alt={testimonial.name}
-                    className="w-24 h-24 rounded-full mb-2 border-4 border-blue-400 object-cover shadow-lg"
+                    className="w-12 h-12 rounded-full mb-2 border-2 border-blue-400 object-cover shadow-lg"
                   />
 
                   <p className="text-gray-300 text-lg italic mb-6 flex-grow">

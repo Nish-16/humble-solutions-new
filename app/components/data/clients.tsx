@@ -10,7 +10,7 @@ export const testimonialsData: Testimonial[] = [
   {
     quote:
       "Investing in Humble solutions was worth it! I'm glad I found the perfect tech partners who helped bring my vision to life. I simply explained my bookkeeping process for cylinder management and how I wanted my application to look and function like. Humble Solutions understood the task on the first go and developed such an incredible application that I can't imagine a more efficient way to manage cylinders! Now, I am able to upscale my cylinder distribution as now I know I have track of every cylinder that I have!",
-    name: "Sarah Lynn",
+    name: "Mohit",
     title: "Owner of Gobind Traders",
     img: "https://placehold.co/100x100/4299e1/FFFFFF/png?text=SL",
   },

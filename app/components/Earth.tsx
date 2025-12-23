@@ -65,7 +65,7 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         y: 0,
         scale: 1,
         opacity: 1,
-        duration: 1.4,
+        duration: 1,
         ease: "power3.out",
         stagger: { each: 0.18, from: "center" },
       });
