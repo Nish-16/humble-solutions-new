@@ -119,12 +119,10 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     return () => {
       cancelAnimationFrame(layoutRAF);
       window.removeEventListener("resize", onResize);
-
       tl?.kill();
       globeTween?.kill();
       st?.kill();
       gsap.killTweensOf(boxes);
-
       ScrollTrigger.refresh();
     };
   }, []);
@@ -132,14 +130,18 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   /* ================= COLOR MAP ================= */
 
   const boxColorMap: Record<string, string> = {
-    indigo: "from-indigo-500/25 to-indigo-300/5 border-indigo-400/30",
-    emerald: "from-emerald-500/25 to-emerald-300/5 border-emerald-400/30",
-    cyan: "from-cyan-500/25 to-cyan-300/5 border-cyan-400/30",
-    violet: "from-violet-500/25 to-violet-300/5 border-violet-400/30",
+    indigo:
+      "from-indigo-500/30 to-indigo-300/10 border-indigo-400/60 shadow-indigo-500/30",
+    emerald:
+      "from-emerald-500/30 to-emerald-300/10 border-emerald-400/60 shadow-emerald-500/30",
+    cyan:
+      "from-cyan-500/30 to-cyan-300/10 border-cyan-400/60 shadow-cyan-500/30",
+    violet:
+      "from-violet-500/30 to-violet-300/10 border-violet-400/60 shadow-violet-500/30",
   };
 
   const baseBoxClasses =
-    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl shadow-2xl text-white text-center z-20 bg-gradient-to-br";
+    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-all duration-300 hover:scale-[1.04] hover:shadow-2xl";
 
   return (
     <section
@@ -148,23 +150,8 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     >
       <GalaxyBackground />
 
-      {/* ================= HEADING (TOP CENTER) ================= */}
-      <h2
-        className="
-          services-heading
-          absolute
-          top-8
-          left-1/2
-          -translate-x-1/2
-          z-30
-          text-center
-          text-3xl
-          md:text-5xl
-          font-bold
-          tracking-tight
-          text-white
-        "
-      >
+      {/* ================= HEADING ================= */}
+      <h2 className="absolute top-8 left-1/2 -translate-x-1/2 z-30 text-3xl md:text-5xl font-bold tracking-tight text-white">
         Our Services
       </h2>
 
@@ -198,8 +185,8 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
               </div>
             </div>
 
-            <h3 className="font-semibold text-lg mb-1">{box.title}</h3>
-            <p className="text-sm text-gray-200">{box.description}</p>
+            <h3 className="font-semibold text-lg mb-1 cursor-default">{box.title}</h3>
+            <p className="text-sm text-gray-200 cursor-default">{box.description}</p>
           </div>
         );
       })}
