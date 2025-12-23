@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Instagram, Linkedin } from "lucide-react";
 import Link from "next/link"; // ⭐ Must import Link for internal navigation
 import Lottie from "lottie-react";
+import footer from "@/public/photos/footer.json"
 const FooterSection = () => {
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const FooterSection = () => {
         {/* 5. Right-side Illustration */}
         <div className="flex justify-center md:justify-end items-start w-full">
           <Lottie
-            animationData={require("../../public/photos/footer.json")}
+            animationData={footer}
             loop
             className="w-40 h-40 md:w-60 md:h-60"
           />

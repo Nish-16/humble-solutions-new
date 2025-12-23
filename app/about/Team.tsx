@@ -11,12 +11,9 @@ type Member = {
 };
 
 const TEAM: Member[] = [
-  { id: "1", name: "Asha Patel", title: "Founder & Product", handle: "ashapatel" },
-  { id: "2", name: "Diego Ramos", title: "Engineering Lead", handle: "diegoramos" },
-  { id: "3", name: "Maya Chen", title: "Machine Learning", handle: "mayachen" },
-  { id: "4", name: "Liam O'Connor", title: "Frontend Engineer", handle: "liamoconnor" },
-  { id: "5", name: "Noah Singh", title: "DevOps & Platform", handle: "noahsingh" },
-  { id: "6", name: "Sofia Morales", title: "Data Engineer", handle: "sofiamorales" },
+  { id: "1", name: "Ansh Bajaj", title: "Founder & Product", handle: "ashapatel" },
+  { id: "2", name: "Ishank", title: "Engineering Lead", handle: "diegoramos" },
+  { id: "3", name: "Mohit", title: "Machine Learning", handle: "mayachen" },
 ];
 
 export default function TeamSection() {
