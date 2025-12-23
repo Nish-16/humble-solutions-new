@@ -88,7 +88,7 @@ const AboutSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative flex flex-col items-center justify-center px-6 sm:px-12 py-20 bg-gray-900 overflow-hidden"
+      className="relative flex flex-col items-center justify-center px-6 sm:px-12 py-40 bg-gray-900 overflow-hidden"
       id="about"
     >
       {/* Canvas background */}
