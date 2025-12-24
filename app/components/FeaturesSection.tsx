@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import team from "../../public/team.json";
+import team from "../../public/services/team.json";
 import idea from "../../public/idea.json";
 
 // --- TypeScript Interface for our data ---
