@@ -25,10 +25,10 @@ export const projects: Project[] = [
 
     image: "/portfolio/aromax.jpeg",
     images: [
-      "/portfolio/aromex/1.jpeg",
-      "/portfolio/aromex/2.jpeg",
-      "/portfolio/aromex/3.jpeg",
-      "/portfolio/aromex/4.jpeg",
+      "/portfolio/Aromex/1.jpeg",
+      "/portfolio/Aromex/2.jpeg",
+      "/portfolio/Aromex/3.jpeg",
+      "/portfolio/Aromex/4.jpeg",
     ],
     href: "#",
     tags: ["Desktop App", "Inventory Management", "Analytics"],
