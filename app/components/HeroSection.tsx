@@ -2,27 +2,18 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TypingText } from "./UI/TypingTextDemo";
 import GalaxyBackground from "./GalaxyBackground";
 import Earth from "./Earth";
 import Lottie from "lottie-react";
 
-gsap.registerPlugin(ScrollTrigger);
-
 const HeroSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const nextSectionRef = useRef<HTMLDivElement>(null);
   const [animationData, setAnimationData] = useState<any>(null);
 
   // ================= HERO GSAP =================
   useEffect(() => {
-    // 1. Refresh ScrollTrigger once data loads to prevent layout shift jitter
-    if (animationData) {
-      ScrollTrigger.refresh();
-    }
-
     const ctx = gsap.context(() => {
       // Entrance animation
       gsap
@@ -30,43 +21,10 @@ const HeroSection: React.FC = () => {
         .from(".gsap-hero-title", { y: 60, scale: 0.92, opacity: 0 })
         .from(".gsap-hero-desc", { y: 40, stagger: 0.18, opacity: 0 }, "-=1.4")
         .from(".gsap-cta", { y: 30, scale: 0.95, opacity: 0 }, "-=1.2");
-
-      // Scroll crossfade
-      if (sectionRef.current && contentRef.current && nextSectionRef.current) {
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.5, // 2. Changed from 1 to 0.5 for snappier, less "floaty" response
-              pin: true,
-              pinSpacing: false,
-              // 3. Add anticipatePin to reduce flicker on fast scrolls
-              anticipatePin: 1, 
-            },
-          })
-          .to(contentRef.current, {
-            opacity: 0,
-            y: -150,
-            scale: 0.9,
-            ease: "power1.inOut",
-            // 4. Force hardware acceleration
-            willChange: "transform, opacity", 
-          })
-          .fromTo(
-            nextSectionRef.current,
-            // 5. REMOVED 'y: 100'. Moving the container breaks the child's (Earth)
-            // getBoundingClientRect calculations. We only fade it in now.
-            { opacity: 0 }, 
-            { opacity: 1, ease: "power2.out" },
-            "<50%"
-          );
-      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [animationData]); // Add animationData to dependency to refresh triggers on load
+  }, []);
 
   // ================= LOAD LOTTIE =================
   useEffect(() => {
@@ -80,7 +38,9 @@ const HeroSection: React.FC = () => {
       } catch {}
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -110,7 +70,8 @@ const HeroSection: React.FC = () => {
               />
 
               <p className="gsap-hero-desc text-base sm:text-2xl max-w-2xl mb-6 text-white/80">
-                Boost Your Sales Exponentially With Memorable Digital Experiences
+                Boost Your Sales Exponentially With Memorable Digital
+                Experiences
               </p>
 
               <p className="gsap-hero-desc text-sm sm:text-xl max-w-2xl mb-10 text-white/60">
@@ -133,7 +94,11 @@ const HeroSection: React.FC = () => {
                     animationData={animationData}
                     loop
                     autoplay
-                    style={{ width: "100%", height: "100%", transform: "scale(1.25)" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      transform: "scale(1.25)",
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full bg-zinc-900/30 rounded-md flex items-center justify-center text-sm text-zinc-400">
@@ -147,8 +112,7 @@ const HeroSection: React.FC = () => {
       </section>
 
       {/* ================= EARTH SECTION ================= */}
-      {/* 7. Added z-index relative to ensure it layers correctly over fixed hero if needed */}
-      <div ref={nextSectionRef} className="opacity-0 relative z-20">
+      <div className="relative z-20">
         <ClientEarthRender />
       </div>
     </>

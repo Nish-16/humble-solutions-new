@@ -23,7 +23,7 @@ export default function StatsProcess() {
               viewport={{ once: true }}
               transition={{ duration: 0.45 }}
             >
-              <Stat number="45+" label="Projects" />
+              <Stat number="10+" label="Projects" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -31,7 +31,7 @@ export default function StatsProcess() {
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: 0.06 }}
             >
-              <Stat number="12" label="Industries" />
+              <Stat number="6" label="Industries" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -47,7 +47,7 @@ export default function StatsProcess() {
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: 0.18 }}
             >
-              <Stat number="8+ yrs" label="Experience" />
+              <Stat number="2+ yrs" label="Experience" />
             </motion.div>
           </div>
         </motion.div>

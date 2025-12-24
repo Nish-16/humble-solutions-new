@@ -27,7 +27,7 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     if (!sectionRef.current) return;
 
     const section = sectionRef.current;
-    
+
     // Filter out nulls in case of unmounting/remounting issues
     const boxes = boxesRef.current.filter(Boolean);
 
@@ -64,9 +64,11 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       gsap.set(boxes, {
         x: (i) => fromVars[i].x,
         y: (i) => fromVars[i].y,
-        opacity: 0,
-        scale: 0.65,
-        visibility: "visible" // Ensure visibility after calculation
+        autoAlpha: 0,
+        scale: 0.75,
+        force3D: true,
+        visibility: "visible", // Ensure visibility after calculation
+        willChange: "transform, opacity",
       });
 
       tl = gsap.timeline({ paused: true });
@@ -75,23 +77,23 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         x: 0,
         y: 0,
         scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
-        stagger: { each: 0.15, from: "center" },
-        // 4. Important: prevent layout thrashing during animation
-        willChange: "transform, opacity" 
+        autoAlpha: 1,
+        duration: 1.15,
+        ease: "power4.out",
+        stagger: { each: 0.12, from: "center" },
+        overwrite: "auto",
       });
 
       tl.to(
         boxes,
         {
-          y: "+=6",
-          duration: 1.2,
+          y: "+=8",
+          duration: 0.9,
           ease: "sine.inOut",
           yoyo: true,
           repeat: 1,
-          stagger: { each: 0.1, from: "center" },
+          stagger: { each: 0.08, from: "center" },
+          overwrite: "auto",
         },
         ">+0.05"
       );
@@ -121,15 +123,15 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     // 5. Use a slight timeout to allow the browser to paint before calculating rects
     // This fixes issues where Lottie or parents haven't fully expanded yet.
     const initTimer = setTimeout(() => {
-       build();
-       ScrollTrigger.refresh();
+      build();
+      ScrollTrigger.refresh();
     }, 100);
 
     const onResize = () => {
       cancelAnimationFrame(layoutRAF);
       layoutRAF = requestAnimationFrame(() => {
-          build();
-          ScrollTrigger.refresh();
+        build();
+        ScrollTrigger.refresh();
       });
     };
 
@@ -147,16 +149,19 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   }, []);
 
   /* ================= COLOR MAP ... (Rest is same) ================= */
-  
+
   const boxColorMap: Record<string, string> = {
-    indigo: "from-indigo-500/30 to-indigo-300/10 border-indigo-400/60 shadow-indigo-500/30",
-    emerald: "from-emerald-500/30 to-emerald-300/10 border-emerald-400/60 shadow-emerald-500/30",
+    indigo:
+      "from-indigo-500/30 to-indigo-300/10 border-indigo-400/60 shadow-indigo-500/30",
+    emerald:
+      "from-emerald-500/30 to-emerald-300/10 border-emerald-400/60 shadow-emerald-500/30",
     cyan: "from-cyan-500/30 to-cyan-300/10 border-cyan-400/60 shadow-cyan-500/30",
-    violet: "from-violet-500/30 to-violet-300/10 border-violet-400/60 shadow-violet-500/30",
+    violet:
+      "from-violet-500/30 to-violet-300/10 border-violet-400/60 shadow-violet-500/30",
   };
 
   const baseBoxClasses =
-    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-all duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0"; // Added opacity-0 default to prevent flash before JS loads
+    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-transform transition-shadow duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0"; // Added opacity-0 default to prevent flash before JS loads
 
   // ... Return Statement remains the same ...
   return (
@@ -196,8 +201,12 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
                 <Icon className="w-6 h-6 text-[#b6e0fe]" />
               </div>
             </div>
-            <h3 className="font-semibold text-lg mb-1 cursor-default">{box.title}</h3>
-            <p className="text-sm text-gray-200 cursor-default">{box.description}</p>
+            <h3 className="font-semibold text-lg mb-1 cursor-default">
+              {box.title}
+            </h3>
+            <p className="text-sm text-gray-200 cursor-default">
+              {box.description}
+            </p>
           </div>
         );
       })}

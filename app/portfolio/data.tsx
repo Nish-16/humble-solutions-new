@@ -108,4 +108,19 @@ export const projects: Project[] = [
     href: "#",
     tags: ["Desktop", "Analytics", "Inventory Management"],
   },
+  {
+    title: "Grocery Store Management",
+    subtitle: "Kotlin • Jetpack Compose • Firebase",
+    categories: ["apps"],
+
+    image: "/portfolio/mohit.jpeg",
+    images: [
+      "/portfolio/Grocery/1.jpeg",
+      "/portfolio/Grocery/2.jpeg",
+      "/portfolio/Grocery/3.jpeg",
+      "/portfolio/Grocery/4.jpeg",
+    ],
+    href: "#",
+    tags: ["Mobile", "E-commerce", "Inventory Management"],
+  },
 ];
