@@ -18,6 +18,11 @@ const HeroSection: React.FC = () => {
 
   // ================= HERO GSAP =================
   useEffect(() => {
+    // 1. Refresh ScrollTrigger once data loads to prevent layout shift jitter
+    if (animationData) {
+      ScrollTrigger.refresh();
+    }
+
     const ctx = gsap.context(() => {
       // Entrance animation
       gsap
@@ -34,9 +39,11 @@ const HeroSection: React.FC = () => {
               trigger: sectionRef.current,
               start: "top top",
               end: "bottom top",
-              scrub: 1,
+              scrub: 0.5, // 2. Changed from 1 to 0.5 for snappier, less "floaty" response
               pin: true,
               pinSpacing: false,
+              // 3. Add anticipatePin to reduce flicker on fast scrolls
+              anticipatePin: 1, 
             },
           })
           .to(contentRef.current, {
@@ -44,23 +51,26 @@ const HeroSection: React.FC = () => {
             y: -150,
             scale: 0.9,
             ease: "power1.inOut",
+            // 4. Force hardware acceleration
+            willChange: "transform, opacity", 
           })
           .fromTo(
             nextSectionRef.current,
-            { opacity: 0, y: 100 },
-            { opacity: 1, y: 0, ease: "power2.out" },
+            // 5. REMOVED 'y: 100'. Moving the container breaks the child's (Earth)
+            // getBoundingClientRect calculations. We only fade it in now.
+            { opacity: 0 }, 
+            { opacity: 1, ease: "power2.out" },
             "<50%"
           );
       }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [animationData]); // Add animationData to dependency to refresh triggers on load
 
   // ================= LOAD LOTTIE =================
   useEffect(() => {
     let mounted = true;
-
     async function load() {
       try {
         const res = await fetch("/Home/smartphone.json");
@@ -69,16 +79,12 @@ const HeroSection: React.FC = () => {
         if (mounted) setAnimationData(json);
       } catch {}
     }
-
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   return (
     <>
-      {/* ================= HERO ================= */}
       <section
         ref={sectionRef}
         className="relative flex items-center min-h-screen w-full overflow-hidden"
@@ -87,10 +93,10 @@ const HeroSection: React.FC = () => {
 
         <div className="relative z-10 w-full">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-10">
-            {/* ---------- LEFT TEXT ---------- */}
             <div
               ref={contentRef}
-              className="md:w-1/2 w-full flex flex-col justify-center text-center md:text-left pt-24 md:pt-0"
+              // 6. Added will-change-transform via tailwind arbitrary property just in case
+              className="md:w-1/2 w-full flex flex-col justify-center text-center md:text-left pt-24 md:pt-0 [will-change:transform]"
             >
               <TypingText
                 text={["Humble Solutions"]}
@@ -120,7 +126,6 @@ const HeroSection: React.FC = () => {
               </a>
             </div>
 
-            {/* ---------- RIGHT LOTTIE ---------- */}
             <div className="md:w-1/2 w-full flex justify-center">
               <div className="w-full h-[380px] md:h-[650px] lg:h-[720px] overflow-hidden">
                 {animationData ? (
@@ -128,7 +133,7 @@ const HeroSection: React.FC = () => {
                     animationData={animationData}
                     loop
                     autoplay
-                    style={{ width: "100%", height: "100%",transform: "scale(1.25)" }}
+                    style={{ width: "100%", height: "100%", transform: "scale(1.25)" }}
                   />
                 ) : (
                   <div className="w-full h-full bg-zinc-900/30 rounded-md flex items-center justify-center text-sm text-zinc-400">
@@ -142,7 +147,8 @@ const HeroSection: React.FC = () => {
       </section>
 
       {/* ================= EARTH SECTION ================= */}
-      <div ref={nextSectionRef} className="opacity-0">
+      {/* 7. Added z-index relative to ensure it layers correctly over fixed hero if needed */}
+      <div ref={nextSectionRef} className="opacity-0 relative z-20">
         <ClientEarthRender />
       </div>
     </>
@@ -151,23 +157,19 @@ const HeroSection: React.FC = () => {
 
 export default HeroSection;
 
-// ================= CLIENT-ONLY EARTH =================
+// ... ClientEarthRender remains the same ...
 function ClientEarthRender() {
   const [showEarth, setShowEarth] = useState(false);
-
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const update = () => setShowEarth(mq.matches);
-
     update();
     mq.addEventListener?.("change", update);
     mq.addListener?.(update);
-
     return () => {
       mq.removeEventListener?.("change", update);
       mq.removeListener?.(update);
     };
   }, []);
-
   return showEarth ? <Earth size="h-[100vh]" /> : null;
 }
