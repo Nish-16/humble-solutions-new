@@ -6,46 +6,76 @@ import ProfileCard from "./ProfileCards";
 type Member = {
   id: string;
   name: string;
-  title: string;
-  handle?: string;
+  imageUrl: string;
+  linkedinUrl?: string;
 };
 
 const TEAM: Member[] = [
-  { id: "1", name: "Ansh Bajaj", title: "Founder & Product", handle: "ashapatel" },
-  { id: "2", name: "Ishank", title: "Engineering Lead", handle: "diegoramos" },
-  { id: "3", name: "Mohit", title: "Machine Learning", handle: "mayachen" },
+  {
+    id: "1",
+    name: "Ansh Bajaj",
+    imageUrl: "/about/Ansh.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/anshbajaj2611/",
+  },
+  {
+    id: "2",
+    name: "Ishank Goyal",
+    imageUrl: "/about/Ishank.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/ishank-goyal-4555a7275/",
+  },
+  {
+    id: "3",
+    name: "Mohit Sachdeva",
+    imageUrl: "/about/Mohit.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/mohit-sehdev-3bb4a3212/",
+  },
+  {
+    id: "4",
+    name: "Sharnya Goel",
+    imageUrl: "/about/Sharnya.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/sharnya-goel-b96697284/",
+  },
+  {
+    id: "5",
+    name: "Shreya Baranwal",
+    imageUrl: "/about/Shreya.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/shreya-baranwal-3188a427b/",
+  },
 ];
 
 export default function TeamSection() {
   return (
     <section id="team" className="mt-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-white text-center">
           Meet the team
         </h2>
+
         <p className="mt-3 text-white/80 text-center max-w-2xl mx-auto">
-          Small, focused teams that ship product-grade software and cloud systems.
+          Small, focused teams that ship product-grade software and cloud
+          systems.
         </p>
 
-        <div className="
-          mt-8
-          grid
-          grid-cols-1
-          place-items-center
-          sm:place-items-stretch
-          sm:grid-cols-2
-          lg:grid-cols-3
-          gap-6
-        ">
-          {TEAM.map((m) => (
-            <ProfileCard
-              key={m.id}
-              avatarUrl={`https://api.dicebear.com/6.x/identicon/svg?seed=${encodeURIComponent(
-                m.name
-              )}`}
-              name={m.name}
-            />
-          ))}
+        {/* GRID */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {TEAM.map((m, index) => {
+            const alignLastRow =
+              index === 3
+                ? "lg:row-start-2 lg:col-start-1 lg:col-span-2 flex justify-center"
+                : index === 4
+                ? "lg:row-start-2 lg:col-start-2 lg:col-span-2 flex justify-center"
+                : "flex justify-center";
+
+            return (
+              <div key={m.id} className={alignLastRow}>
+                <ProfileCard
+                  avatarUrl={m.imageUrl}
+                  name={m.name}
+                  linkedinUrl={m.linkedinUrl}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
