@@ -29,7 +29,7 @@ export const services = [
     desc: "Tailored web, mobile, and cloud solutions built to your needs.",
     icon: (
       <img
-        src="/Web.gif"
+        src="/services/Web.gif"
         alt="AI Icon"
         width={150}
         height={50}
@@ -43,7 +43,7 @@ export const services = [
     desc: "Automate workflows and gain insights with modern ML solutions.",
     icon: (
       <img
-        src="/AI.gif"
+        src="/services/AI.gif"
         alt="AI Icon"
         width={150}
         height={50}
@@ -57,7 +57,7 @@ export const services = [
     desc: "Strategy, architecture, and go-to-market guidance for tech teams.",
     icon: (
       <img
-        src="/Consulting.gif"
+        src="/services/Consulting.gif"
         alt="Consulting Icon"
         width={150}
         height={50}
@@ -71,7 +71,7 @@ export const services = [
     desc: "Human-centered interfaces and product design that convert.",
     icon: (
       <img
-        src="/design.gif"
+        src="/services/design.gif"
         alt="Design Icon"
         width={150}
         height={50}
@@ -85,7 +85,7 @@ export const services = [
     desc: "Reliable infrastructure, CI/CD, and cost-optimized deployments.",
     icon: (
       <img
-        src="/Cloud.gif"
+        src="/services/Cloud.gif"
         alt="Cloud Icon"
         width={150}
         height={50}
@@ -99,7 +99,7 @@ export const services = [
     desc: "Ongoing support to keep your systems healthy and secure.",
     icon: (
       <img
-        src="/Support.gif"
+        src="/services/Support.gif"
         alt="Support Icon"
         width={150}
         height={50}
