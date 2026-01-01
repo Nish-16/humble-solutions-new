@@ -6,6 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lottie from "lottie-react";
 import contact from "@/public/Home/contact-email.json";
 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const ContactSection = () => {
@@ -16,6 +19,7 @@ const ContactSection = () => {
     "idle" | "loading" | "success" | "error"
   >("idle");
 
+  // GSAP animations
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (leftRef.current) {
@@ -56,6 +60,7 @@ const ContactSection = () => {
     return () => ctx.revert();
   }, []);
 
+  // Firestore submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
@@ -63,20 +68,20 @@ const ContactSection = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    try {
-      const response = await fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: { Accept: "application/json" },
-      });
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      message: formData.get("message"),
+      createdAt: serverTimestamp(),
+    };
 
-      if (response.ok) {
-        setStatus("success");
-        form.reset();
-      } else {
-        setStatus("error");
-      }
-    } catch {
+    try {
+      await addDoc(collection(db, "contacts"), data);
+      setStatus("success");
+      form.reset();
+    } catch (error) {
+      console.error("Firestore error:", error);
       setStatus("error");
     }
   };
@@ -87,7 +92,7 @@ const ContactSection = () => {
   return (
     <section
       id="contact"
-      className="py-20 md:py-20 lg:py-24 flex items-center justify-center bg-gradient-to-br from-[#2057C5] to-[#9CBDFF] text-white px-4 overflow-x-hidden"
+      className="py-20 lg:py-24 flex items-center justify-center bg-gradient-to-br from-[#2057C5] to-[#9CBDFF] text-white px-4 overflow-x-hidden"
     >
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* LEFT */}
@@ -108,13 +113,9 @@ const ContactSection = () => {
         <form
           suppressHydrationWarning
           ref={rightRef}
-          action="https://formspree.io/f/mnqkgeav"
-          method="POST"
           onSubmit={handleSubmit}
           className="space-y-6 w-full max-w-lg mx-auto bg-white/10 backdrop-blur-sm p-6 rounded-xl"
         >
-          <input type="hidden" name="_subject" value="New Contact Form" />
-
           <div>
             <label className="block mb-1 font-medium">Full Name</label>
             <input
@@ -143,7 +144,7 @@ const ContactSection = () => {
               type="tel"
               name="phone"
               className={inputClass}
-              placeholder="+123456789"
+              placeholder="+91 XXXXXXXX"
             />
           </div>
 
