@@ -12,14 +12,16 @@ import { db } from "@/lib/firebase";
 gsap.registerPlugin(ScrollTrigger);
 
 const ContactSection = () => {
+  // Refs for GSAP animations
   const leftRef = useRef<HTMLDivElement | null>(null);
   const rightRef = useRef<HTMLFormElement | null>(null);
 
+  // Form submission state
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
 
-  // GSAP animations
+  // Scroll-based GSAP animations
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (leftRef.current) {
@@ -60,24 +62,62 @@ const ContactSection = () => {
     return () => ctx.revert();
   }, []);
 
-  // Firestore submit
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Client-side rate limiting (30s)
+    const lastSubmit = localStorage.getItem("contact_last_submit");
+    if (lastSubmit && Date.now() - Number(lastSubmit) < 30000) {
+      alert("Please wait before submitting again.");
+      return;
+    }
+
     setStatus("loading");
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Honeypot field check
+    if (formData.get("company")) return;
+
+    // Basic input validation
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+
+    if (!name || !email || !message) {
+      setStatus("error");
+      return;
+    }
+
+    // Message length protection
+    if (message.length > 1000) {
+      alert("Message too long");
+      setStatus("idle");
+      return;
+    }
+
+    // Firestore document payload
     const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      message: formData.get("message"),
+      name,
+      email,
+      phone,
+      message,
       createdAt: serverTimestamp(),
     };
 
     try {
+      // Write contact data to Firestore
       await addDoc(collection(db, "contacts"), data);
+
+      // Store submit time for rate limiting
+      localStorage.setItem(
+        "contact_last_submit",
+        Date.now().toString()
+      );
+
       setStatus("success");
       form.reset();
     } catch (error) {
@@ -86,6 +126,7 @@ const ContactSection = () => {
     }
   };
 
+  // Shared input styles
   const inputClass =
     "w-full bg-transparent border border-white placeholder-white outline-none py-2 px-3 rounded";
 
@@ -95,9 +136,11 @@ const ContactSection = () => {
       className="py-20 lg:py-24 flex items-center justify-center bg-gradient-to-br from-[#2057C5] to-[#9CBDFF] text-white px-4 overflow-x-hidden"
     >
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        {/* LEFT */}
+        {/* Left content */}
         <div ref={leftRef} className="text-center lg:text-left">
-          <h3 className="text-xl font-medium mb-2">Got a Project in Mind?</h3>
+          <h3 className="text-xl font-medium mb-2">
+            Got a Project in Mind?
+          </h3>
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
             Let’s Make It Happen Together!
           </h1>
@@ -109,13 +152,22 @@ const ContactSection = () => {
           />
         </div>
 
-        {/* RIGHT FORM */}
+        {/* Contact form */}
         <form
           suppressHydrationWarning
           ref={rightRef}
           onSubmit={handleSubmit}
           className="space-y-6 w-full max-w-lg mx-auto bg-white/10 backdrop-blur-sm p-6 rounded-xl"
         >
+          {/* Honeypot input */}
+          <input
+            type="text"
+            name="company"
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+
           <div>
             <label className="block mb-1 font-medium">Full Name</label>
             <input
@@ -155,6 +207,7 @@ const ContactSection = () => {
               className={`${inputClass} h-24 resize-none`}
               placeholder="Tell us about your project..."
               required
+              maxLength={500}
             />
           </div>
 
