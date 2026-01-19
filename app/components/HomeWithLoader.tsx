@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Lenis from "@studio-freight/lenis";
 
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
@@ -13,21 +14,19 @@ import ContactSection from "./ContactSection";
 import LoadingScreen from "./LoadingScreen";
 
 const HOME_LOADER_FLAG = "hs_home_loaded";
-const MIN_LOADER_MS = 600;
+const MIN_LOADER_MS = 3000;
 
 export default function HomeWithLoader() {
   const [loading, setLoading] = useState(true);
 
+  // Loader logic (unchanged)
   useEffect(() => {
-    // Show loader only on first visit per tab/session.
     try {
       if (sessionStorage.getItem(HOME_LOADER_FLAG) === "1") {
         setLoading(false);
         return;
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -37,9 +36,7 @@ export default function HomeWithLoader() {
       document.body.style.overflow = previousOverflow;
       try {
         sessionStorage.setItem(HOME_LOADER_FLAG, "1");
-      } catch {
-        // ignore
-      }
+      } catch {}
     }, MIN_LOADER_MS);
 
     return () => {
@@ -47,6 +44,27 @@ export default function HomeWithLoader() {
       document.body.style.overflow = previousOverflow;
     };
   }, []);
+
+  // ✅ Lenis smooth scroll (runs ONLY after loader)
+  useEffect(() => {
+    if (loading) return;
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      smoothWheel: true,
+    });
+
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, [loading]);
 
   if (loading) return <LoadingScreen />;
 
