@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import Lottie from "lottie-react";
+import React, { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-import GalaxyBackground from "./GalaxyBackground";
-import Globe from "@/public/Home/Earth.json";
 import { earthBoxes } from "./data/hero_data";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// 🔥 Dynamically load heavy visual libs/components
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+const GalaxyBackground = dynamic(() => import("./GalaxyBackground"), {
+  ssr: false,
+  loading: () => null,
+});
 
 type EarthProps = {
   size?: string;
@@ -18,17 +22,30 @@ type EarthProps = {
 export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const boxesRef = useRef<HTMLDivElement[]>([]);
+  const [globeData, setGlobeData] = useState<object | null>(null);
 
   const setBoxRef = (el: HTMLDivElement | null, idx: number) => {
     if (el) boxesRef.current[idx] = el;
   };
 
+  // 🌍 Load Lottie JSON dynamically (NOT bundled into JS)
+  useEffect(() => {
+    let mounted = true;
+
+    fetch("/Home/Earth.json")
+      .then((res) => res.json())
+      .then((data) => mounted && setGlobeData(data))
+      .catch(() => {});
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (!sectionRef.current) return;
 
     const section = sectionRef.current;
-
-    // Filter out nulls in case of unmounting/remounting issues
     const boxes = boxesRef.current.filter(Boolean);
 
     let layoutRAF = 0;
@@ -37,19 +54,16 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     let st: ScrollTrigger | null = null;
 
     const build = () => {
-      // 1. Safety check: Ensure section is actually visible/sized
       const rect = section.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) return;
 
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      // 2. Clear previous props to ensure clean calculation
       gsap.set(boxes, { clearProps: "all" });
 
       const fromVars = boxes.map((box) => {
         const b = box.getBoundingClientRect();
-        // Calculate offsets relative to the section center
         return {
           x: centerX - (b.left - rect.left + b.width / 2),
           y: centerY - (b.top - rect.top + b.height / 2),
@@ -60,14 +74,13 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       globeTween?.kill();
       st?.kill();
 
-      // 3. Set initial state (Explosion start point)
       gsap.set(boxes, {
         x: (i) => fromVars[i].x,
         y: (i) => fromVars[i].y,
         autoAlpha: 0,
         scale: 0.75,
         force3D: true,
-        visibility: "visible", // Ensure visibility after calculation
+        visibility: "visible",
         willChange: "transform, opacity",
       });
 
@@ -98,7 +111,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         ">+0.05"
       );
 
-      // Earth rotation
       globeTween = gsap.to(".earth-lottie", {
         rotation: 35,
         ease: "none",
@@ -112,7 +124,7 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
 
       st = ScrollTrigger.create({
         trigger: section,
-        start: "top 65%", // Adjusted slightly to ensure it triggers comfortably
+        start: "top 65%",
         onEnter: () => tl?.restart(),
         onEnterBack: () => tl?.restart(),
         onLeave: () => tl?.reverse(),
@@ -120,8 +132,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       });
     };
 
-    // 5. Use a slight timeout to allow the browser to paint before calculating rects
-    // This fixes issues where Lottie or parents haven't fully expanded yet.
     const initTimer = setTimeout(() => {
       build();
       ScrollTrigger.refresh();
@@ -148,8 +158,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     };
   }, []);
 
-  /* ================= COLOR MAP ... (Rest is same) ================= */
-
   const boxColorMap: Record<string, string> = {
     indigo:
       "from-indigo-500/30 to-indigo-300/10 border-indigo-400/60 shadow-indigo-500/30",
@@ -161,9 +169,8 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   };
 
   const baseBoxClasses =
-    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-transform transition-shadow duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0"; // Added opacity-0 default to prevent flash before JS loads
+    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-transform transition-shadow duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0";
 
-  // ... Return Statement remains the same ...
   return (
     <section
       ref={sectionRef}
@@ -176,12 +183,14 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       </h2>
 
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-        <Lottie
-          animationData={Globe}
-          loop
-          autoplay
-          className="earth-lottie w-[120vmin] h-[120vmin] opacity-90"
-        />
+        {globeData && (
+          <Lottie
+            animationData={globeData}
+            loop
+            autoplay
+            className="earth-lottie w-[120vmin] h-[120vmin] opacity-90"
+          />
+        )}
       </div>
 
       {earthBoxes.map((box, idx) => {
@@ -190,11 +199,9 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
           <div
             key={box.id}
             ref={(el) => setBoxRef(el, idx)}
-            className={`
-              ${baseBoxClasses}
-              ${box.position}
-              ${boxColorMap[box.color] ?? boxColorMap.indigo}
-            `}
+            className={`${baseBoxClasses} ${box.position} ${
+              boxColorMap[box.color] ?? boxColorMap.indigo
+            }`}
           >
             <div className="flex items-center justify-center mb-3">
               <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shadow-lg backdrop-blur-lg">

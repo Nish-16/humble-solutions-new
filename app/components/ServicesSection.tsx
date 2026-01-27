@@ -14,76 +14,98 @@ export default function ServicesSection() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      if (!sectionRef.current) return;
-
-      // --- Heading fade-in ---
+      /* ---------------- Heading ---------------- */
       if (headingRef.current) {
-        gsap.from(headingRef.current, {
-          opacity: 0,
-          y: 50,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        });
+        gsap.fromTo(
+          headingRef.current,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: headingRef.current,
+              start: "top 85%",
+            },
+          }
+        );
       }
 
-      // --- Cards fade-in on scroll ---
+      /* ---------------- Cards ---------------- */
       const cards = gsap.utils.toArray<HTMLElement>(".service-card");
 
       cards.forEach((card) => {
-        gsap.from(card, {
-          opacity: 0,
-          y: 70,
-          scale: 0.95,
-          duration: 0.5,
+        // Scroll reveal
+        gsap.fromTo(
+          card,
+          { opacity: 0, y: 60, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 90%",
+              once: true,
+            },
+          }
+        );
+
+        // Hover animations (conflict-free)
+        const scaleTo = gsap.quickTo(card, "scale", {
+          duration: 0.25,
           ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",
-            toggleActions: "play none none reverse",
-          },
         });
 
-        // --- Hover scale animation ---
-        const onEnter = () =>
-          gsap.to(card, {
-            scale: 1.05,
-            y: -10,
-            duration: 0.2,
-            ease: "power3.out",
-            boxShadow: "0 12px 25px rgba(0, 0, 0, 0.15)",
-          });
+        const yTo = gsap.quickTo(card, "y", {
+          duration: 0.25,
+          ease: "power3.out",
+        });
 
-        const onLeave = () =>
-          gsap.to(card, {
-            scale: 1,
-            y: 0,
-            duration: 0.2,
-            ease: "power3.inOut",
-            boxShadow: "0 0 0 rgba(0,0,0,0)",
-          });
+        const onEnter = () => {
+          scaleTo(1.05);
+          yTo(-10);
+        };
+
+        const onLeave = () => {
+          scaleTo(1);
+          yTo(0);
+        };
 
         card.addEventListener("mouseenter", onEnter);
         card.addEventListener("mouseleave", onLeave);
+
+        // Cleanup (VERY important in Next.js)
+        return () => {
+          card.removeEventListener("mouseenter", onEnter);
+          card.removeEventListener("mouseleave", onLeave);
+        };
       });
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
-  // --- Cursor glow effect handlers ---
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    el.style.setProperty("--mx", `${x}px`);
-    el.style.setProperty("--my", `${y}px`);
-    el.style.setProperty("--light-opacity", "1");
+  /* ---------------- Cursor Glow ---------------- */
+  const rafRef = useRef<number | null>(null);
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (rafRef.current) return;
+
+    rafRef.current = requestAnimationFrame(() => {
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+
+      el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+      el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+      el.style.setProperty("--light-opacity", "1");
+
+      rafRef.current = null;
+    });
   };
 
   const handleMouseLeave = (
@@ -96,11 +118,11 @@ export default function ServicesSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-gray-900 text-white py-20 sm:py-32 overflow-hidden"
       id="services"
+      className="relative bg-gray-900 text-white py-20 sm:py-32 overflow-hidden"
     >
-      {/* Canvas background */}
       <GalaxyBackground />
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
         <h2
           ref={headingRef}
@@ -113,30 +135,30 @@ export default function ServicesSection() {
           {servicesData.map((service) => (
             <div
               key={service.title}
-              className={`service-card relative bg-gradient-to-br ${service.gradient} rounded-2xl p-8 shadow-2xl border ${service.border} flex flex-col items-center text-center backdrop-blur-lg transition-transform duration-300`}
+              className={`service-card relative bg-gradient-to-br ${service.gradient}
+                rounded-2xl p-8 shadow-2xl border ${service.border}
+                flex flex-col items-center text-center backdrop-blur-lg
+                will-change-transform`}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
               style={
                 {
-                  position: "relative",
-                  overflow: "hidden",
-                  "--light-opacity": "0",
                   "--mx": "50%",
                   "--my": "50%",
+                  "--light-opacity": "0",
                 } as React.CSSProperties
               }
             >
               {/* Glow Overlay */}
               <div
+                className="pointer-events-none absolute inset-0 rounded-2xl"
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  borderRadius: "inherit",
-                  pointerEvents: "none",
-                  background: `radial-gradient(600px circle at var(--mx) var(--my),
+                  background: `radial-gradient(
+                    600px circle at var(--mx) var(--my),
                     rgba(255,255,255,0.12),
                     rgba(255,255,255,0.04) 30%,
-                    transparent 60%)`,
+                    transparent 60%
+                  )`,
                   opacity: "var(--light-opacity)",
                   transition: "opacity 0.25s ease",
                   mixBlendMode: "overlay",
@@ -144,7 +166,7 @@ export default function ServicesSection() {
               />
 
               {service.icon}
-              <h3 className="text-xl font-semibold mb-3 text-white">
+              <h3 className="text-xl font-semibold mb-3">
                 {service.title}
               </h3>
               <p className="text-gray-400 leading-relaxed">
