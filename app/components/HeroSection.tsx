@@ -4,15 +4,12 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import { TypingText } from "./UI/TypingTextDemo";
+import ClientEarthRendered from "./ClientEarthRendered";
 
 // 🔥 Heavy visual components loaded dynamically
 const GalaxyBackground = dynamic(() => import("./GalaxyBackground"), {
   ssr: false,
   loading: () => null,
-});
-
-const Earth = dynamic(() => import("./Earth"), {
-  ssr: false,
 });
 
 const Lottie = dynamic(() => import("lottie-react"), {
@@ -22,36 +19,45 @@ const Lottie = dynamic(() => import("lottie-react"), {
 const HeroSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [animationData, setAnimationData] = useState<object | null>(null);
+  const [showGalaxy, setShowGalaxy] = useState(false);
 
   // ================= HERO GSAP =================
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: { ease: "expo.out", duration: 1.8 },
-      });
+    const ctx = gsap.context((self) => {
+      const q = self.selector!;
 
-      tl.from(".gsap-hero-title", { y: 60, scale: 0.92, opacity: 0 })
-        .from(".gsap-hero-desc", { y: 40, stagger: 0.18, opacity: 0 }, "-=1.4")
-        .from(".gsap-cta", { y: 30, scale: 0.95, opacity: 0 }, "-=1.2");
+      gsap
+        .timeline({ defaults: { ease: "expo.out", duration: 1.8 } })
+        .from(q(".gsap-hero-title"), { y: 60, scale: 0.92, opacity: 0 })
+        .from(
+          q(".gsap-hero-desc"),
+          { y: 40, stagger: 0.18, opacity: 0 },
+          "-=1.4",
+        )
+        .from(q(".gsap-cta"), { y: 30, scale: 0.95, opacity: 0 }, "-=1.2");
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
-  // ================= LOAD LOTTIE JSON =================
+  // ================= DELAY GALAXY BACKGROUND =================
   useEffect(() => {
-    let mounted = true;
+    const timer = setTimeout(() => setShowGalaxy(true), 800); // after first paint
+    return () => clearTimeout(timer);
+  }, []);
 
-    fetch("/Home/smartphone.json")
-      .then((res) => res.json())
-      .then((data) => mounted && setAnimationData(data))
-      .catch(() => {});
+  // ================= DELAY LOTTIE LOAD =================
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetch("/Home/smartphone.json")
+        .then((res) => res.json())
+        .then((data) => setAnimationData(data))
+        .catch(() => {});
+    }, 1200); // wait for hero animation start
 
-    return () => {
-      mounted = false;
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   // 🧠 Memoize Lottie to prevent re-renders
@@ -66,7 +72,6 @@ const HeroSection: React.FC = () => {
         style={{
           width: "100%",
           height: "100%",
-          transform: "scale(1.25)",
         }}
       />
     );
@@ -78,42 +83,42 @@ const HeroSection: React.FC = () => {
         ref={sectionRef}
         className="relative flex items-center min-h-screen w-full overflow-hidden"
       >
-        <GalaxyBackground />
+        {showGalaxy && <GalaxyBackground />}
 
         <div className="relative z-10 w-full">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-10">
-            <div className="md:w-1/2 w-full flex flex-col justify-center text-center md:text-left pt-24 md:pt-0 [will-change:transform]">
+            <div className="md:w-1/2 w-full flex flex-col justify-center text-center md:text-left pt-24 md:pt-0">
               <TypingText
                 text={["Humble Solutions"]}
                 typingSpeed={80}
                 pauseDuration={1500}
                 showCursor
-                className="gsap-hero-title text-4xl sm:text-6xl font-bold mb-4"
+                className="gsap-hero-title text-4xl sm:text-6xl font-bold mb-4 will-change-transform"
                 cursorClassName="h-12"
                 textColors={["#3b82f6", "#8b5cf6", "#06b6d4"]}
                 variableSpeed={{ min: 100, max: 200 }}
               />
 
-              <p className="gsap-hero-desc text-base sm:text-2xl max-w-2xl mb-6 text-white/80">
+              <p className="gsap-hero-desc text-base sm:text-2xl max-w-2xl mb-6 text-white/80 will-change-transform">
                 Boost Your Sales Exponentially With Memorable Digital
                 Experiences
               </p>
 
-              <p className="gsap-hero-desc text-sm sm:text-xl max-w-2xl mb-10 text-white/60">
+              <p className="gsap-hero-desc text-sm sm:text-xl max-w-2xl mb-10 text-white/60 will-change-transform">
                 Our responsive apps, websites, and user-centric UI/UX designs
                 craft outstanding customer journeys that drive conversions.
               </p>
 
               <a
                 href="#services"
-                className="gsap-cta inline-block w-fit px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-base md:text-lg font-semibold shadow-lg transition-colors mx-auto md:mx-0"
+                className="gsap-cta inline-block w-fit px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-base md:text-lg font-semibold shadow-lg transition-colors mx-auto md:mx-0 will-change-transform"
               >
                 See Our Solutions
               </a>
             </div>
 
             <div className="md:w-1/2 w-full flex justify-center">
-              <div className="w-full h-[380px] md:h-[650px] lg:h-[720px] overflow-hidden">
+              <div className="w-full h-[380px] md:h-[650px] lg:h-[720px] overflow-hidden transform-gpu will-change-transform">
                 {lottieAnimation ? (
                   lottieAnimation
                 ) : (
@@ -129,27 +134,10 @@ const HeroSection: React.FC = () => {
 
       {/* ================= EARTH SECTION ================= */}
       <div className="relative z-20">
-        <ClientEarthRender />
+        <ClientEarthRendered />
       </div>
     </>
   );
 };
 
 export default HeroSection;
-
-// ================= CLIENT EARTH RENDER =================
-function ClientEarthRender() {
-  const [showEarth, setShowEarth] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const update = () => setShowEarth(mq.matches);
-
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  if (!showEarth) return null;
-  return <Earth size="h-[100vh]" />;
-}

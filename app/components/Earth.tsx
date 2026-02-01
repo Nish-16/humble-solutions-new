@@ -8,7 +8,6 @@ import { earthBoxes } from "./data/hero_data";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// 🔥 Dynamically load heavy visual libs/components
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 const GalaxyBackground = dynamic(() => import("./GalaxyBackground"), {
   ssr: false,
@@ -22,24 +21,50 @@ type EarthProps = {
 export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const boxesRef = useRef<HTMLDivElement[]>([]);
+  const lottieRef = useRef<any>(null);
+
   const [globeData, setGlobeData] = useState<object | null>(null);
 
   const setBoxRef = (el: HTMLDivElement | null, idx: number) => {
     if (el) boxesRef.current[idx] = el;
   };
 
-  // 🌍 Load Lottie JSON dynamically (NOT bundled into JS)
+  // 🌍 Load Lottie only when near viewport
   useEffect(() => {
-    let mounted = true;
+    const section = sectionRef.current;
+    if (!section) return;
 
-    fetch("/Home/Earth.json")
-      .then((res) => res.json())
-      .then((data) => mounted && setGlobeData(data))
-      .catch(() => {});
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          fetch("/Home/Earth.json")
+            .then((res) => res.json())
+            .then(setGlobeData);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
 
-    return () => {
-      mounted = false;
-    };
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  // 🎬 Pause/play Lottie based on visibility
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top bottom",
+      end: "bottom top",
+      onEnter: () => lottieRef.current?.play(),
+      onEnterBack: () => lottieRef.current?.play(),
+      onLeave: () => lottieRef.current?.pause(),
+      onLeaveBack: () => lottieRef.current?.pause(),
+    });
+
+    return () => trigger.kill();
   }, []);
 
   useEffect(() => {
@@ -48,27 +73,23 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
     const section = sectionRef.current;
     const boxes = boxesRef.current.filter(Boolean);
 
-    let layoutRAF = 0;
     let tl: gsap.core.Timeline | null = null;
     let globeTween: gsap.core.Tween | null = null;
     let st: ScrollTrigger | null = null;
 
     const build = () => {
       const rect = section.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) return;
+      if (!rect.width || !rect.height) return;
 
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      gsap.set(boxes, { clearProps: "all" });
+      const boxRects = boxes.map((box) => box.getBoundingClientRect());
 
-      const fromVars = boxes.map((box) => {
-        const b = box.getBoundingClientRect();
-        return {
-          x: centerX - (b.left - rect.left + b.width / 2),
-          y: centerY - (b.top - rect.top + b.height / 2),
-        };
-      });
+      const fromVars = boxRects.map((b) => ({
+        x: centerX - (b.left - rect.left + b.width / 2),
+        y: centerY - (b.top - rect.top + b.height / 2),
+      }));
 
       tl?.kill();
       globeTween?.kill();
@@ -80,7 +101,6 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
         autoAlpha: 0,
         scale: 0.75,
         force3D: true,
-        visibility: "visible",
         willChange: "transform, opacity",
       });
 
@@ -114,6 +134,7 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       globeTween = gsap.to(".earth-lottie", {
         rotation: 35,
         ease: "none",
+        lazy: true,
         scrollTrigger: {
           trigger: section,
           start: "top bottom",
@@ -132,24 +153,22 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       });
     };
 
-    const initTimer = setTimeout(() => {
-      build();
-      ScrollTrigger.refresh();
-    }, 100);
+    build();
+    ScrollTrigger.refresh();
 
+    // 🧠 Debounced resize
+    let resizeTimeout: any;
     const onResize = () => {
-      cancelAnimationFrame(layoutRAF);
-      layoutRAF = requestAnimationFrame(() => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
         build();
         ScrollTrigger.refresh();
-      });
+      }, 200);
     };
 
     window.addEventListener("resize", onResize);
 
     return () => {
-      clearTimeout(initTimer);
-      cancelAnimationFrame(layoutRAF);
       window.removeEventListener("resize", onResize);
       tl?.kill();
       globeTween?.kill();
@@ -169,7 +188,10 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
   };
 
   const baseBoxClasses =
-    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-transform transition-shadow duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0";
+    "info-box absolute w-44 md:w-56 p-4 backdrop-blur-md rounded-2xl text-white text-center z-20 bg-gradient-to-br border border-2 transition-transform transition-shadow duration-300 hover:scale-[1.04] hover:shadow-2xl opacity-0 will-change-transform";
+
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
     <section
@@ -185,10 +207,13 @@ export default function Earth({ size = "h-[80vh]" }: EarthProps) {
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         {globeData && (
           <Lottie
+            lottieRef={lottieRef}
             animationData={globeData}
             loop
             autoplay
-            className="earth-lottie w-[120vmin] h-[120vmin] opacity-90"
+            className={`earth-lottie ${
+              isMobile ? "w-[160vmin] h-[160vmin]" : "w-[120vmin] h-[120vmin]"
+            } opacity-90`}
           />
         )}
       </div>
