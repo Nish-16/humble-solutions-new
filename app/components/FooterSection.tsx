@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Instagram, Linkedin } from "lucide-react";
 import Link from "next/link"; // ⭐ Must import Link for internal navigation
 import Lottie from "lottie-react";
