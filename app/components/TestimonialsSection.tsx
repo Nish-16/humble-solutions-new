@@ -81,9 +81,6 @@ const TestimonialsSection: React.FC = () => {
       return; // fall back to native handling
     }
 
-    // Prevent the page from vertically scrolling while cursor is over the track
-    e.preventDefault();
-
     // Scroll horizontally by the vertical delta
     el.scrollLeft += e.deltaY;
   };

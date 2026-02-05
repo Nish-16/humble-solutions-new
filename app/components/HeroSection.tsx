@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import { TypingText } from "./UI/TypingTextDemo";
-import ClientEarthRendered from "./ClientEarthRendered";
 
 // 🔥 Heavy visual components loaded dynamically
 const GalaxyBackground = dynamic(() => import("./GalaxyBackground"), {
@@ -118,7 +117,7 @@ const HeroSection: React.FC = () => {
             </div>
 
             <div className="md:w-1/2 w-full flex justify-center">
-              <div className="w-full h-[380px] md:h-[650px] lg:h-[720px] overflow-hidden transform-gpu will-change-transform">
+              <div className="w-full h-[250px] md:h-[650px] lg:h-[720px] pt-[-5] md:pt-12 overflow-hidden transform-gpu will-change-transform">
                 {lottieAnimation ? (
                   lottieAnimation
                 ) : (
@@ -131,11 +130,6 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* ================= EARTH SECTION ================= */}
-      <div className="relative z-20">
-        <ClientEarthRendered />
-      </div>
     </>
   );
 };

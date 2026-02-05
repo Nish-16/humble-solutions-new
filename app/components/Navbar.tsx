@@ -160,7 +160,7 @@ export default function Navbar() {
                 >
                   <span
                     className={[
-                      "block px-3 py-2 rounded-lg text-white font-medium",
+                      "block px-3 py-2 rounded-lg text-white font-medium mt-0.5",
                       "hover:bg-blue-700/30 hover:text-blue-300",
                       active
                         ? "bg-blue-700/40 text-blue-200 border border-blue-400/30 shadow-sm"

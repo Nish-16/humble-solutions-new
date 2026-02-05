@@ -7,10 +7,6 @@ import Lottie from "lottie-react";
 import footer from "@/public/photos/footer.json"
 const FooterSection = () => {
 
-  useEffect(() => {
-    console.log("FooterSection mounted");
-  }, []);
-
   return (
     <footer className="relative z-40 bg-[#0B0F19] text-white px-6 md:px-16 py-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 items-start justify-items-center md:justify-items-start">

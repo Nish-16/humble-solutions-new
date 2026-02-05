@@ -65,23 +65,10 @@ export default function ServicesSection() {
           ease: "power3.out",
         });
 
-        const onEnter = () => {
-          scaleTo(1.05);
-          yTo(-10);
-        };
-
-        const onLeave = () => {
-          scaleTo(1);
-          yTo(0);
-        };
-
-        card.addEventListener("mouseenter", onEnter);
-        card.addEventListener("mouseleave", onLeave);
+                
 
         // Cleanup (VERY important in Next.js)
         return () => {
-          card.removeEventListener("mouseenter", onEnter);
-          card.removeEventListener("mouseleave", onLeave);
         };
       });
     }, sectionRef);
@@ -139,8 +126,6 @@ export default function ServicesSection() {
                 rounded-2xl p-8 shadow-2xl border ${service.border}
                 flex flex-col items-center text-center backdrop-blur-lg
                 will-change-transform`}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
               style={
                 {
                   "--mx": "50%",
