@@ -23,7 +23,7 @@ const FooterSection = () => {
 
           <div className="flex gap-4 mt-2 justify-center md:justify-start mr-0 md:mr-10 w-full">
             {/* Instagram */}
-            <a
+            {/* <a
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
@@ -31,10 +31,10 @@ const FooterSection = () => {
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" />
-            </a>
+            </a> */}
 
             {/* LinkedIn */}
-            <a
+            {/* <a
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
@@ -42,7 +42,7 @@ const FooterSection = () => {
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
-            </a>
+            </a> */}
           </div>
         </div>
 
@@ -55,7 +55,7 @@ const FooterSection = () => {
 
           <div>
             <strong className="block text-white text-lg">Phone</strong>
-            <span className="text-gray-300 text-xs">+91 81949 63318</span>
+            <span className="text-gray-300 text-xs">+91 86859 88991</span>
           </div>
 
           <div>

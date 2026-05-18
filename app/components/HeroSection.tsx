@@ -109,7 +109,7 @@ const HeroSection: React.FC = () => {
               </p>
 
               <a
-                href="#services"
+                href="/portfolio"
                 className="gsap-cta inline-block w-fit px-8 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-base md:text-lg font-semibold shadow-lg transition-colors mx-auto md:mx-0 will-change-transform"
               >
                 See Our Solutions
