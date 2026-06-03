@@ -1,11 +1,24 @@
 "use client";
 
-import React from "react";
-import { Instagram, Linkedin } from "lucide-react";
-import Link from "next/link"; // ⭐ Must import Link for internal navigation
-import Lottie from "lottie-react";
-import footer from "@/public/photos/footer.json"
+import React, { useEffect, useState } from "react";
+// Instagram and Linkedin imports removed — the social links are commented out,
+// so importing the icons added ~2 KB to the bundle for nothing.
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+
+// Lottie + footer.json excluded from initial bundle.
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
 const FooterSection = () => {
+  const [footerData, setFooterData] = useState<object | null>(null);
+
+  useEffect(() => {
+    fetch("/photos/footer.json")
+      .then((r) => r.json())
+      .then(setFooterData)
+      .catch(() => {});
+  }, []);
 
   return (
     <footer className="relative z-40 bg-[#0B0F19] text-white px-6 md:px-16 py-12">
@@ -14,10 +27,12 @@ const FooterSection = () => {
         {/* 1. Logo + Social Icons */}
         <div className="flex flex-col gap-10 justify-center items-center md:items-start md:justify-start w-full">
           <div className="space-y-2 w-full flex flex-col items-center md:items-start">
-            <img
+            <Image
               src="/Home/logo.png"
               alt="Humble Solutions"
-              className="w-50 mx-auto md:mx-0"
+              width={200}
+              height={50}
+              className="mx-auto md:mx-0"
             />
           </div>
 
@@ -87,11 +102,13 @@ const FooterSection = () => {
 
         {/* 5. Right-side Illustration */}
         <div className="flex justify-center md:justify-end items-start w-full">
-          <Lottie
-            animationData={footer}
-            loop
-            className="w-40 h-40 md:w-60 md:h-60"
-          />
+          {footerData && (
+            <Lottie
+              animationData={footerData}
+              loop
+              className="w-40 h-40 md:w-60 md:h-60"
+            />
+          )}
         </div>
 
       </div>

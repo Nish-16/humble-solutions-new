@@ -24,17 +24,29 @@ const AboutSection: React.FC = () => {
 
   const [robotData, setRobotData] = useState<object | null>(null);
 
-  // 🎞 Load robot Lottie JSON dynamically (not bundled)
+  // Load Robot.json only when this section approaches the viewport —
+  // avoids wasting bandwidth on the initial page load.
   useEffect(() => {
     let mounted = true;
 
-    fetch("/Robot.json")
-      .then((res) => res.json())
-      .then((data) => mounted && setRobotData(data))
-      .catch(() => {});
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+          fetch("/Robot.json")
+            .then((res) => res.json())
+            .then((data) => mounted && setRobotData(data))
+            .catch(() => {});
+        }
+      },
+      { rootMargin: "300px" }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
 
     return () => {
       mounted = false;
+      observer.disconnect();
     };
   }, []);
 

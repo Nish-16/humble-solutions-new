@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useLayoutEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { testimonialsData } from "./data/clients";
 
@@ -154,10 +155,12 @@ const TestimonialsSection: React.FC = () => {
                   key={`${testimonial.name}-${idx}`}
                   className="min-w-[85vw] md:min-w-[420px] lg:min-w-[480px] bg-gray-800/50 rounded-2xl p-8 shadow-2xl border border-blue-500/10 flex flex-col items-center text-center"
                 >
-                  <img
+                  <Image
                     src={testimonial.img}
                     alt={testimonial.name}
-                    className="w-12 h-12 rounded-full mb-2 border-2 border-blue-400 object-cover shadow-lg"
+                    width={48}
+                    height={48}
+                    className="rounded-full mb-2 border-2 border-blue-400 object-cover shadow-lg"
                   />
 
                   <p className="text-gray-300 text-lg italic mb-6 flex-grow">

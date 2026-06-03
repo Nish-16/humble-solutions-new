@@ -1,8 +1,15 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import GalaxyBackground from "./GalaxyBackground";
+import dynamic from "next/dynamic";
 import { gsap } from "gsap";
+
+// Static import would pull Three.js into the synchronous bundle.
+// Dynamic import keeps it in a separate chunk loaded only when this section renders.
+const GalaxyBackground = dynamic(() => import("./GalaxyBackground"), {
+  ssr: false,
+  loading: () => null,
+});
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { servicesData } from "./data/Service_data";
 

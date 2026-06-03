@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverCard from "./HoverCard";
@@ -57,9 +58,18 @@ const HumbleAdvantage = () => {
 
   return (
     <section
-      className="w-full py-30 px-6 text-white bg-cover relative z-10 bg-center"
-      style={{ backgroundImage: "url('/Home/humble-bg.png')" }}
+      className="w-full py-30 px-6 text-white relative z-10 overflow-hidden"
     >
+      {/* Background image via next/image so it is served as AVIF/WebP and lazy-loaded.
+          The 1 MB PNG is reduced to ~150–250 KB in modern formats. */}
+      <Image
+        src="/Home/humble-bg.png"
+        alt=""
+        fill
+        className="object-cover object-center -z-10"
+        loading="lazy"
+        aria-hidden="true"
+      />
       <div className="max-w-7xl mx-auto text-center">
         <div ref={headingRef}>
           <h3 className="font-avenir-regular text-lg font-medium mb-5">

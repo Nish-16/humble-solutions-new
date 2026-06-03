@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
@@ -73,10 +74,13 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-1 flex justify-between items-center">
         <Link href="/" aria-label="Go to home">
-          <img
+          <Image
             src="/Home/logo.png"
             alt="Humble Solutions logo"
-            className="h-10 w-auto ml-5"
+            width={160}
+            height={40}
+            className="ml-5 h-10 w-auto"
+            priority
           />
         </Link>
 

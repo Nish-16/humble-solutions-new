@@ -7,14 +7,16 @@ import { gsap } from "gsap";
 
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
-import AboutSection from "./AboutSection";
-import ServicesSection from "./ServicesSection";
-import TestimonialsSection from "./TestimonialsSection";
-import FooterSection from "./FooterSection";
-import HumbleAdvantage from "./HumbleAdvantage";
-import ContactSection from "./ContactSection";
 
-//  Only Earth is lazy-loaded
+// Below-fold sections: lazy-loaded so their JS (Firebase, Three.js, Lottie)
+// is excluded from the initial bundle, directly reducing TBT and main-thread work.
+const AboutSection = dynamic(() => import("./AboutSection"), { loading: () => null });
+const ServicesSection = dynamic(() => import("./ServicesSection"), { loading: () => null });
+const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), { loading: () => null });
+const FooterSection = dynamic(() => import("./FooterSection"), { loading: () => null });
+const HumbleAdvantage = dynamic(() => import("./HumbleAdvantage"), { loading: () => null });
+const ContactSection = dynamic(() => import("./ContactSection"), { loading: () => null });
+
 const ClientEarthRendered = dynamic(() => import("./ClientEarthRendered"), {
   ssr: false,
 });

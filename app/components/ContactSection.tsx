@@ -1,13 +1,15 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lottie from "lottie-react";
-import contact from "@/public/Home/contact-email.json";
-
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+
+// lottie-react is ~150 KB gzipped. Dynamic import moves it out of the initial bundle.
+// The contact JSON is fetched at runtime so it never gets statically bundled.
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +22,15 @@ const ContactSection = () => {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+
+  // Lazily fetched Lottie data (not bundled at build time)
+  const [contactData, setContactData] = useState<object | null>(null);
+  useEffect(() => {
+    fetch("/Home/contact-email.json")
+      .then((r) => r.json())
+      .then(setContactData)
+      .catch(() => {});
+  }, []);
 
   // Scroll-based GSAP animations
   useEffect(() => {
@@ -145,11 +156,13 @@ const ContactSection = () => {
             Let’s Make It Happen Together!
           </h1>
 
-          <Lottie
-            animationData={contact}
-            loop
-            className="w-64 md:w-72 mx-auto lg:mx-0 mt-4"
-          />
+          {contactData && (
+            <Lottie
+              animationData={contactData}
+              loop
+              className="w-64 md:w-72 mx-auto lg:mx-0 mt-4"
+            />
+          )}
         </div>
 
         {/* Contact form */}

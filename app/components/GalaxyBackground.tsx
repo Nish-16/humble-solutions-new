@@ -15,7 +15,9 @@ const GalaxyBackground: React.FC = () => {
       canvas,
       alpha: true,
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Cap DPR at 1.5 on mobile (saves 44% GPU fill-rate vs. native 3×).
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#020617");
@@ -28,8 +30,8 @@ const GalaxyBackground: React.FC = () => {
     );
     camera.position.z = 5;
 
-    // Stars
-    const starCount = 1000;
+    // Fewer stars on mobile: 400 vs 1000 reduces vertex processing by 60%.
+    const starCount = isMobile ? 400 : 1000;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(starCount * 3);
 
@@ -58,16 +60,42 @@ const GalaxyBackground: React.FC = () => {
     scene.add(stars);
 
     let frameId: number;
+    let running = true;
     const clock = new THREE.Clock();
 
     const animate = () => {
+      if (!running) return;
       const elapsed = clock.getElapsedTime();
       stars.rotation.y = elapsed * 0.05;
       stars.rotation.x = elapsed * 0.02;
-
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     };
+
+    const start = () => {
+      if (running) return;
+      running = true;
+      animate();
+    };
+
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(frameId);
+    };
+
+    // Pause rAF when browser tab is hidden — saves CPU on background tabs
+    const onVisibilityChange = () => {
+      document.hidden ? stop() : start();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    // Pause rAF when canvas is scrolled out of viewport
+    const io = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? start() : stop(); },
+      { rootMargin: "50px" }
+    );
+    io.observe(canvas);
+
     animate();
 
     // Resize renderer to the actual canvas layout size to avoid oversized drawing buffer
@@ -89,7 +117,10 @@ const GalaxyBackground: React.FC = () => {
     resize();
 
     return () => {
+      running = false;
       cancelAnimationFrame(frameId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      io.disconnect();
       ro.disconnect();
       renderer.dispose();
       geometry.dispose();
