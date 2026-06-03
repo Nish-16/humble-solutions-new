@@ -61,19 +61,6 @@ export default function ServicesSection() {
           }
         );
 
-        // Hover animations (conflict-free)
-        const scaleTo = gsap.quickTo(card, "scale", {
-          duration: 0.25,
-          ease: "power3.out",
-        });
-
-        const yTo = gsap.quickTo(card, "y", {
-          duration: 0.25,
-          ease: "power3.out",
-        });
-
-                
-
         // Cleanup (VERY important in Next.js)
         return () => {
         };
@@ -82,32 +69,6 @@ export default function ServicesSection() {
 
     return () => ctx.revert();
   }, []);
-
-  /* ---------------- Cursor Glow ---------------- */
-  const rafRef = useRef<number | null>(null);
-  const handleMouseMove = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    if (rafRef.current) return;
-
-    rafRef.current = requestAnimationFrame(() => {
-      const el = e.currentTarget;
-      const rect = el.getBoundingClientRect();
-
-      el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-      el.style.setProperty("--my", `${e.clientY - rect.top}px`);
-      el.style.setProperty("--light-opacity", "1");
-
-      rafRef.current = null;
-    });
-  };
-
-  const handleMouseLeave = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    const el = e.currentTarget;
-    el.style.setProperty("--light-opacity", "0");
-  };
 
   return (
     <section

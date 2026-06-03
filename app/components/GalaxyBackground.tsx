@@ -85,13 +85,13 @@ const GalaxyBackground: React.FC = () => {
 
     // Pause rAF when browser tab is hidden — saves CPU on background tabs
     const onVisibilityChange = () => {
-      document.hidden ? stop() : start();
+      if (document.hidden) { stop(); } else { start(); }
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     // Pause rAF when canvas is scrolled out of viewport
     const io = new IntersectionObserver(
-      ([entry]) => { entry.isIntersecting ? start() : stop(); },
+      ([entry]) => { if (entry.isIntersecting) { start(); } else { stop(); } },
       { rootMargin: "50px" }
     );
     io.observe(canvas);
