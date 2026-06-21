@@ -47,6 +47,13 @@ const TEAM: Member[] = [
     imageUrl: "/about/Shreya.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/shreya-baranwal-3188a427b/",
   },
+  {
+    id: "6",
+    name: "Rishi Bhardwaj",
+    role: "Software Engineer",
+    imageUrl: "/about/Rishi.jpeg",
+    linkedinUrl: "https://www.linkedin.com/in/rishi-bhardwaj-30293a304/",
+  },
 ];
 
 export default function TeamSection() {
@@ -64,25 +71,16 @@ export default function TeamSection() {
 
         {/* GRID */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TEAM.map((m, index) => {
-            const alignLastRow =
-              index === 3
-                ? "lg:row-start-2 lg:col-start-1 lg:col-span-2 flex justify-center"
-                : index === 4
-                ? "lg:row-start-2 lg:col-start-2 lg:col-span-2 flex justify-center"
-                : "flex justify-center";
-
-            return (
-              <div key={m.id} className={alignLastRow}>
-                <ProfileCard
-                  avatarUrl={m.imageUrl}
-                  name={m.name}
-                  role={m.role}
-                  linkedinUrl={m.linkedinUrl}
-                />
-              </div>
-            );
-          })}
+          {TEAM.map((m) => (
+            <div key={m.id} className="flex justify-center">
+              <ProfileCard
+                avatarUrl={m.imageUrl}
+                name={m.name}
+                role={m.role}
+                linkedinUrl={m.linkedinUrl}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>
