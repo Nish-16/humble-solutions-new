@@ -6,6 +6,7 @@ import ProfileCard from "./ProfileCards";
 type Member = {
   id: string;
   name: string;
+  role: string;
   imageUrl: string;
   linkedinUrl?: string;
 };
@@ -14,30 +15,35 @@ const TEAM: Member[] = [
   {
     id: "1",
     name: "Ansh Bajaj",
+    role: "Product Manager",
     imageUrl: "/about/Ansh.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/anshbajaj2611/",
   },
   {
     id: "2",
     name: "Ishank Goyal",
+    role: "Product Manager",
     imageUrl: "/about/Ishank.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/ishank-goyal-4555a7275/",
   },
   {
     id: "3",
     name: "Mohit Sachdeva",
+    role: "Head Of Outreach",
     imageUrl: "/about/Mohit.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/mohit-sehdev-3bb4a3212/",
   },
   {
     id: "4",
     name: "Sharnya Goel",
+    role: "Software Engineer",
     imageUrl: "/about/Sharnya.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/sharnya-goel-b96697284/",
   },
   {
     id: "5",
     name: "Shreya Baranwal",
+    role: "Head Of Design",
     imageUrl: "/about/Shreya.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/shreya-baranwal-3188a427b/",
   },
@@ -71,6 +77,7 @@ export default function TeamSection() {
                 <ProfileCard
                   avatarUrl={m.imageUrl}
                   name={m.name}
+                  role={m.role}
                   linkedinUrl={m.linkedinUrl}
                 />
               </div>
